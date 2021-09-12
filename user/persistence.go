@@ -5,5 +5,5 @@ type PersistenceProvider interface {
 }
 
 type Persister interface {
-	Find(id int64) (*User, error)
+	FindUser(id int64) (*User, error)
 }

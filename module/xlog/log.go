@@ -1,10 +1,9 @@
 package xlog
 
 import (
-	"os"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 const (
@@ -14,59 +13,64 @@ const (
 	ErrorLevel = "error"
 )
 
-type Field = zapcore.Field
+type (
+	Field  = zapcore.Field
+	Logger struct {
+		zap   *zap.Logger
+		sugar *zap.SugaredLogger
+	}
+	options struct {
+		encoder string
+		level   zapcore.Level
+	}
+	Option func(*options)
+)
 
-var Int64 = zap.Int64
-var Int32 = zap.Int32
-var Int = zap.Int
-var Uint32 = zap.Uint32
-var String = zap.String
-var Any = zap.Any
-var Err = zap.Error
-var NamedErr = zap.NamedError
-var Bool = zap.Bool
-var Duration = zap.Duration
+var (
+	Int64    = zap.Int64
+	Int32    = zap.Int32
+	Int      = zap.Int
+	Uint32   = zap.Uint32
+	String   = zap.String
+	Any      = zap.Any
+	Err      = zap.Error
+	NamedErr = zap.NamedError
+	Bool     = zap.Bool
+	Duration = zap.Duration
+)
 
-type Config struct {
-	EnableConsole bool
-	ConsoleJson   bool
-	ConsoleLevel  string
+func New(opts ...Option) *Logger {
+	o := newOptions(opts)
+	encoder := makeEncoder(o.encoder)
+	writer := makeWriter()
+	core := zapcore.NewCore(encoder, writer, o.level)
+	l := zap.New(core)
+
+	return &Logger{
+		zap:   l,
+		sugar: l.Sugar(),
+	}
 }
 
-type Logger struct {
-	zap          *zap.Logger
-	consoleLevel zap.AtomicLevel
+func makeWriter() zapcore.WriteSyncer {
+	return zapcore.AddSync(&lumberjack.Logger{
+		Filename:   "./xlog.log",
+		MaxSize:    500,
+		MaxBackups: 3,
+		MaxAge:     28,
+	})
 }
 
-func Init(config Config) *Logger {
-	cores := []zapcore.Core{}
-	logger := &Logger{
-		consoleLevel: zap.NewAtomicLevelAt(getZapLevel(config.ConsoleLevel)),
+func makeEncoder(encoder string) zapcore.Encoder {
+	cfg := zap.NewProductionEncoderConfig()
+
+	switch encoder {
+	case "json":
+		return zapcore.NewJSONEncoder(cfg)
+	default:
+		cfg.EncodeTime = zapcore.ISO8601TimeEncoder
+		return zapcore.NewConsoleEncoder(cfg)
 	}
-
-	if config.EnableConsole {
-		writer := zapcore.Lock(os.Stderr)
-		core := zapcore.NewCore(makeEncoder(config.ConsoleJson), writer, logger.consoleLevel)
-		cores = append(cores, core)
-	}
-
-	combinedCore := zapcore.NewTee(cores...)
-
-	logger.zap = zap.New(
-		combinedCore,
-		zap.AddCaller(),
-	)
-
-	return logger
-}
-
-func makeEncoder(json bool) zapcore.Encoder {
-	encoderConfig := zap.NewProductionEncoderConfig()
-	if json {
-		return zapcore.NewJSONEncoder(encoderConfig)
-	}
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
 func getZapLevel(level string) zapcore.Level {
@@ -84,32 +88,38 @@ func getZapLevel(level string) zapcore.Level {
 	}
 }
 
-func (l *Logger) SetConsoleLevel(level string) {
-	l.consoleLevel.SetLevel(getZapLevel(level))
-}
-
 func (l *Logger) With(fields ...Field) *Logger {
-	newlogger := *l
-	newlogger.zap = newlogger.zap.With(fields...)
-	return &newlogger
+	ll := *l
+	ll.zap = ll.zap.With(fields...)
+	return &ll
 }
 
-func (l *Logger) Debug(message string, fields ...Field) {
+func (l *Logger) Debug(message string, fields ...Field) *Logger {
 	l.zap.Debug(message, fields...)
+	return l
 }
 
-func (l *Logger) Info(message string, fields ...Field) {
+func (l *Logger) Info(message string, fields ...Field) *Logger {
 	l.zap.Info(message, fields...)
+	return l
 }
 
-func (l *Logger) Warn(message string, fields ...Field) {
+func (l *Logger) Warn(message string, fields ...Field) *Logger {
 	l.zap.Warn(message, fields...)
+	return l
 }
 
-func (l *Logger) Error(message string, fields ...Field) {
+func (l *Logger) Error(message string, fields ...Field) *Logger {
 	l.zap.Error(message, fields...)
+	return l
 }
 
-func (l *Logger) Critical(message string, fields ...Field) {
-	l.zap.Error(message, fields...)
+func (l *Logger) Fatal(message string, fields ...Field) *Logger {
+	l.zap.Fatal(message, fields...)
+	return l
+}
+
+func (l *Logger) Panic(message string, fields ...Field) *Logger {
+	l.zap.Panic(message, fields...)
+	return l
 }

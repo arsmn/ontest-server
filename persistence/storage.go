@@ -1,6 +1,10 @@
 package persistence
 
-import "github.com/arsmn/ontest/user"
+import (
+	"context"
+
+	"github.com/arsmn/ontest/user"
+)
 
 type Provider interface {
 	Persister() Persister
@@ -8,4 +12,6 @@ type Provider interface {
 
 type Persister interface {
 	user.Persister
+
+	Close(context.Context) error
 }

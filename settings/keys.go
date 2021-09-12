@@ -1,6 +1,8 @@
 package settings
 
 const (
+	keySQLDSN                        = "sql.dsn"
+	keySQLDriver                     = "sql.driver"
 	keyHasherArgon2ConfigMemory      = "hashers.argon2.memory"
 	keyHasherArgon2ConfigIterations  = "hashers.argon2.iterations"
 	keyHasherArgon2ConfigParallelism = "hashers.argon2.parallelism"
