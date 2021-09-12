@@ -79,3 +79,11 @@ func (r *RegistryCore) Logger() *xlog.Logger {
 func (r *RegistryCore) Settings() *settings.Config {
 	return r.c
 }
+
+func (r *RegistryCore) App() app.App {
+	return r.app
+}
+
+func (r *RegistryCore) Persister() persistence.Persister {
+	return r.persister
+}

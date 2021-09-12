@@ -7,5 +7,5 @@ type Provider interface {
 }
 
 type App interface {
-	user.Manager
+	user.Service
 }

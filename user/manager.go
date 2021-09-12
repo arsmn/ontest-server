@@ -1,8 +1,9 @@
 package user
 
-type Manager interface {
+type ServiceProvider interface {
+	UserService() Service
 }
 
-type ManagementProvider interface {
-	UserManager() Manager
+type Service interface {
+	Register() error
 }

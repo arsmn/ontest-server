@@ -17,5 +17,5 @@ func New(ctx context.Context) Registry {
 		l.Fatal("Unable to initialize service registry.", xlog.Err(err))
 	}
 
-	return r
+	return r.WithConfig(c).WithLogger(l)
 }
