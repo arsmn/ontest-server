@@ -6,8 +6,10 @@ import (
 
 	"github.com/arsmn/ontest/app"
 	"github.com/arsmn/ontest/app/service"
+	"github.com/arsmn/ontest/module/hash"
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/arsmn/ontest/persistence"
+	"github.com/arsmn/ontest/persistence/sql"
 	"github.com/arsmn/ontest/settings"
 )
 
@@ -16,8 +18,9 @@ type RegistryCore struct {
 	l   *xlog.Logger
 	c   *settings.Config
 
-	app       app.App
-	persister persistence.Persister
+	app            app.App
+	persister      persistence.Persister
+	passwordHasher hash.Hasher
 }
 
 func NewRegistryCore() *RegistryCore {
@@ -25,14 +28,14 @@ func NewRegistryCore() *RegistryCore {
 }
 
 func (r *RegistryCore) Init(ctx context.Context) error {
-	// p, _ := sql.NewPersister(r)
-	// if err != nil {
-	// 	return err
-	// }
+	p, err := sql.NewPersister(r)
+	if err != nil {
+		return err
+	}
 
-	// r.persister = p
-
+	r.persister = p
 	r.app = service.NewApp(r)
+	r.passwordHasher = hash.NewHasherArgon2(r)
 
 	return nil
 }
@@ -61,4 +64,8 @@ func (r *RegistryCore) App() app.App {
 
 func (r *RegistryCore) Persister() persistence.Persister {
 	return r.persister
+}
+
+func (r *RegistryCore) Hasher() hash.Hasher {
+	return r.passwordHasher
 }

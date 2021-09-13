@@ -7,6 +7,6 @@ type PersistenceProvider interface {
 }
 
 type Persister interface {
-	FindUser(context.Context, int64) (*User, error)
+	FindUser(context.Context, uint64) (*User, error)
 	CreateUser(context.Context, *User) error
 }

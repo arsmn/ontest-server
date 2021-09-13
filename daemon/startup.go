@@ -11,17 +11,29 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
-func startupMessage(addr string, tls bool, handlersCount, templatesCount uint32, cfgFile string) {
+type startupConfig struct {
+	addr           string
+	tls            bool
+	handlersCount  uint32
+	templatesCount uint32
+	cfgFile        string
+	mode           string
+	database       string
+}
+
+func startupMessage(cfg startupConfig) {
 	var logo string
 	logo += "\n%s"
 	logo += " ┌─────────────────────────────────────────────────────┐\n"
 	logo += " │ %s   │\n"
 	logo += " │ %s   │\n"
 	logo += " │                                                     │\n"
-	logo += " │ Handlers %s  Templates %s │\n"
 	logo += " │ Go ......%s  Threads ..%s │\n"
 	logo += " │ OS ......%s  PID ......%s │\n"
-	logo += " │ Config file %s \n"
+	logo += " │─────────────────────────────────────────────────────│\n"
+	logo += " │ Handlers %s  Templates %s │\n"
+	logo += " │ Mode ....%s  Database .%s │\n"
+	logo += " │ Config ..%s │\n"
 	logo += " └─────────────────────────────────────────────────────┘"
 	logo += "%s\n\n"
 
@@ -69,13 +81,13 @@ func startupMessage(addr string, tls bool, handlersCount, templatesCount uint32,
 		return str
 	}
 
-	host, port := httplib.ParseAddr(addr)
+	host, port := httplib.ParseAddr(cfg.addr)
 	if host == "" || host == "0.0.0.0" {
 		host = "127.0.0.1"
 	}
-	addr = "http://" + host + ":" + port
-	if tls {
-		addr = "https://" + host + ":" + port
+	cfg.addr = "http://" + host + ":" + port
+	if cfg.tls {
+		cfg.addr = "https://" + host + ":" + port
 	}
 
 	out := colorable.NewColorableStdout()
@@ -85,11 +97,12 @@ func startupMessage(addr string, tls bool, handlersCount, templatesCount uint32,
 	fmt.Fprintf(out, logo,
 		cBlack,
 		centerValue(" On-Test", 49),
-		center(addr, 49),
-		value(strconv.Itoa(int(handlersCount)), 14), value(strconv.Itoa(int(templatesCount)), 14),
+		center(cfg.addr, 49),
 		value(runtime.Version(), 14), value(strconv.Itoa(runtime.NumCPU()), 14),
 		value(runtime.GOOS, 14), value(strconv.Itoa(os.Getpid()), 14),
-		value(cfgFile, 14),
+		value(strconv.Itoa(int(cfg.handlersCount)), 14), value(strconv.Itoa(int(cfg.templatesCount)), 14),
+		value(cfg.mode, 14), value(cfg.database, 14),
+		value(cfg.cfgFile, 41),
 		cReset,
 	)
 }

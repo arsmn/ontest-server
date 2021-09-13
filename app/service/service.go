@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/arsmn/ontest/app"
+	"github.com/arsmn/ontest/module/hash"
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/arsmn/ontest/persistence"
 	"github.com/arsmn/ontest/settings"
@@ -14,6 +15,7 @@ type (
 		xlog.Provider
 		settings.Provider
 		persistence.Provider
+		hash.HashProvider
 	}
 	Service struct {
 		dx serviceDependencies

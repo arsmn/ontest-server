@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"sync"
 
@@ -26,7 +27,17 @@ func ServePublic(ctx context.Context, r driver.Registry, wg *sync.WaitGroup, arg
 	})
 
 	if s.StartupMessageEnabled() {
-		startupMessage(server.Addr, false, h.HandlersCount(), h.TemplatesCount(), settings.ConfigFileUsed())
+		startupMessage(startupConfig{
+			addr:           server.Addr,
+			tls:            false,
+			handlersCount:  h.HandlersCount(),
+			templatesCount: h.TemplatesCount(),
+			cfgFile:        settings.ConfigFileUsed(),
+			mode:           r.Settings().Mode(),
+			database:       r.Settings().SQL().Driver,
+		})
+	} else {
+		l.Info(fmt.Sprintf("Starting the public httpd on: %s", server.Addr))
 	}
 
 	if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {

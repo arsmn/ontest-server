@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/arsmn/ontest/app"
+	"github.com/arsmn/ontest/module/generate"
 	v "github.com/arsmn/ontest/module/validation"
 	t "github.com/arsmn/ontest/transport"
 	"github.com/arsmn/ontest/user"
@@ -16,5 +17,17 @@ func (s *Service) Signup(ctx context.Context, req *t.SignupRequest) (*t.SignupRe
 		return nil, err
 	}
 
-	return nil, s.dx.Persister().CreateUser(ctx, &user.User{})
+	pswd, err := s.dx.Hasher().Generate(ctx, []byte(req.Password))
+	if err != nil {
+		return nil, err
+	}
+
+	u := &user.User{
+		ID:       generate.UID(),
+		Email:    req.Email,
+		IsActive: true,
+		Password: string(pswd),
+	}
+
+	return nil, s.dx.Persister().CreateUser(ctx, u)
 }

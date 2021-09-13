@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ErrValidation = &errors.DefaultError{
+	ErrValidation = &errors.Error{
 		CodeField:   http.StatusBadRequest,
 		StatusField: http.StatusText(http.StatusBadRequest),
 		ErrorField:  "resource is invalid",

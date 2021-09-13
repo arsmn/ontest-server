@@ -33,6 +33,7 @@ type (
 	Config struct {
 		l *xlog.Logger
 
+		mode   string
 		serve  Serve
 		sql    SQL
 		argon2 Argon2
@@ -41,6 +42,9 @@ type (
 
 func New(l *xlog.Logger) *Config {
 	conf := new(Config)
+
+	// Mode
+	conf.mode = viper.GetString(keyMode)
 
 	// Serve
 	conf.serve.StartupMessage = viper.GetBool(keyServeStartupMessage)
@@ -78,10 +82,18 @@ func (c *Config) listenOn(key string) string {
 	return fmt.Sprintf("%s:%d", viper.GetString("serve."+key+".host"), port)
 }
 
-func (c *Config) Argon() Argon2 {
+func (c *Config) HasherArgon2() Argon2 {
 	return c.argon2
 }
 
 func (c *Config) SQL() SQL {
 	return c.sql
+}
+
+func (c *Config) Mode() string {
+	return c.mode
+}
+
+func (c *Config) IsProd() bool {
+	return c.mode == "prod"
 }

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-type DefaultError struct {
+type Error struct {
 	CodeField    int                    `json:"code,omitempty"`
 	StatusField  string                 `json:"status,omitempty"`
 	RIDField     string                 `json:"request,omitempty"`
@@ -18,70 +18,70 @@ type DefaultError struct {
 	err error
 }
 
-func (e DefaultError) Unwrap() error {
+func (e Error) Unwrap() error {
 	return e.err
 }
 
-func (e *DefaultError) Wrap(err error) {
+func (e *Error) Wrap(err error) {
 	e.err = err
 }
 
-func (e DefaultError) Status() string {
+func (e Error) Status() string {
 	return e.StatusField
 }
 
-func (e DefaultError) Error() string {
+func (e Error) Error() string {
 	return e.ErrorField
 }
 
-func (e DefaultError) RequestID() string {
+func (e Error) RequestID() string {
 	return e.RIDField
 }
 
-func (e DefaultError) Reason() string {
+func (e Error) Reason() string {
 	return e.ReasonField
 }
 
-func (e DefaultError) Debug() string {
+func (e Error) Debug() string {
 	return e.DebugField
 }
 
-func (e DefaultError) Details() map[string]interface{} {
+func (e Error) Details() map[string]interface{} {
 	return e.DetailsField
 }
 
-func (e DefaultError) StatusCode() int {
+func (e Error) StatusCode() int {
 	return e.CodeField
 }
 
-func (e DefaultError) WithReason(reason string) *DefaultError {
+func (e Error) WithReason(reason string) *Error {
 	e.ReasonField = reason
 	return &e
 }
 
-func (e DefaultError) WithReasonf(reason string, args ...interface{}) *DefaultError {
+func (e Error) WithReasonf(reason string, args ...interface{}) *Error {
 	return e.WithReason(fmt.Sprintf(reason, args...))
 }
 
-func (e DefaultError) WithError(message string) *DefaultError {
+func (e Error) WithError(message string) *Error {
 	e.ErrorField = message
 	return &e
 }
 
-func (e DefaultError) WithErrorf(message string, args ...interface{}) *DefaultError {
+func (e Error) WithErrorf(message string, args ...interface{}) *Error {
 	return e.WithError(fmt.Sprintf(message, args...))
 }
 
-func (e DefaultError) WithDebugf(debug string, args ...interface{}) *DefaultError {
+func (e Error) WithDebugf(debug string, args ...interface{}) *Error {
 	return e.WithDebug(fmt.Sprintf(debug, args...))
 }
 
-func (e DefaultError) WithDebug(debug string) *DefaultError {
+func (e Error) WithDebug(debug string) *Error {
 	e.DebugField = debug
 	return &e
 }
 
-func (e DefaultError) WithDetail(key string, detail interface{}) *DefaultError {
+func (e Error) WithDetail(key string, detail interface{}) *Error {
 	if e.DetailsField == nil {
 		e.DetailsField = map[string]interface{}{}
 	}
@@ -89,7 +89,7 @@ func (e DefaultError) WithDetail(key string, detail interface{}) *DefaultError {
 	return &e
 }
 
-func (e DefaultError) WithDetailf(key string, message string, args ...interface{}) *DefaultError {
+func (e Error) WithDetailf(key string, message string, args ...interface{}) *Error {
 	if e.DetailsField == nil {
 		e.DetailsField = map[string]interface{}{}
 	}
@@ -97,8 +97,8 @@ func (e DefaultError) WithDetailf(key string, message string, args ...interface{
 	return &e
 }
 
-func ToDefaultError(err error, id string) *DefaultError {
-	de := &DefaultError{
+func ToError(err error, id string) *Error {
+	de := &Error{
 		RIDField:     id,
 		CodeField:    http.StatusInternalServerError,
 		DetailsField: map[string]interface{}{},

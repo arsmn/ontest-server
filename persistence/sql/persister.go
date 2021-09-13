@@ -8,13 +8,18 @@ import (
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/arsmn/ontest/persistence"
 	"github.com/arsmn/ontest/settings"
+	"github.com/arsmn/ontest/user"
 	"github.com/cenkalti/backoff"
-	"github.com/jmoiron/sqlx"
+	"xorm.io/xorm"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var _ persistence.Persister = new(Persister)
+
+var tables = []interface{}{
+	new(user.User),
+}
 
 type (
 	persisterDependencies interface {
@@ -22,12 +27,12 @@ type (
 		settings.Provider
 	}
 	Persister struct {
-		db *sqlx.DB
-		r  persisterDependencies
+		engine *xorm.Engine
+		dx     persisterDependencies
 	}
 )
 
-func NewPersister(r persisterDependencies) (*Persister, error) {
+func NewPersister(dx persisterDependencies) (*Persister, error) {
 	p := new(Persister)
 
 	bc := backoff.NewExponentialBackOff()
@@ -36,35 +41,41 @@ func NewPersister(r persisterDependencies) (*Persister, error) {
 
 	return p, backoff.Retry(
 		func() error {
-			maxOpenConns, maxIdleConns, connMaxLifetime, cleanedDSN := sqlcon.ParseConnectionOptions(r.Logger(), r.Settings().SQL().DSN)
-			r.Logger().
+			maxOpenConns, maxIdleConns, connMaxLifetime, cleanedDSN := sqlcon.ParseConnectionOptions(dx.Logger(), dx.Settings().SQL().DSN)
+			dx.Logger().
 				Debug("Connecting to SQL Database",
 					xlog.Int("maxOpenConns", maxOpenConns),
 					xlog.Int("maxIdleConns", maxIdleConns),
 					xlog.Duration("connMaxLifetime", connMaxLifetime))
 
-			db, err := sqlx.Connect(r.Settings().SQL().Driver, sqlcon.FinalizeDSN(r.Logger(), cleanedDSN))
+			engine, err := xorm.NewEngine(dx.Settings().SQL().Driver, sqlcon.FinalizeDSN(dx.Logger(), cleanedDSN))
 			if err != nil {
-				r.Logger().Warn("Unable to connect to database, retrying.", xlog.Err(err))
+				dx.Logger().Warn("Unable to connect to database, retrying.", xlog.Err(err))
 				return err
 			}
 
-			if err := db.Ping(); err != nil {
-				r.Logger().Warn("Unable to ping database, retrying.", xlog.Err(err))
+			if err := engine.Ping(); err != nil {
+				dx.Logger().Warn("Unable to ping database, retrying.", xlog.Err(err))
 				return err
 			}
 
-			db.SetConnMaxLifetime(connMaxLifetime)
-			db.SetMaxOpenConns(maxOpenConns)
-			db.SetMaxIdleConns(maxIdleConns)
+			if err := engine.Sync2(tables...); err != nil {
+				dx.Logger().Warn("Unable to sync database, retrying.", xlog.Err(err))
+				return err
+			}
 
-			p.r = r
-			p.db = db
+			engine.SetConnMaxLifetime(connMaxLifetime)
+			engine.SetMaxOpenConns(maxOpenConns)
+			engine.SetMaxIdleConns(maxIdleConns)
+			engine.ShowSQL(!dx.Settings().IsProd())
+
+			p.dx = dx
+			p.engine = engine
 
 			return nil
 		}, bc)
 }
 
 func (p *Persister) Close(ctx context.Context) error {
-	return p.db.Close()
+	return p.engine.Close()
 }
