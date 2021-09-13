@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/spf13/viper"
@@ -26,17 +27,21 @@ type (
 		SaltLength  uint32
 		KeyLength   uint32
 	}
+	Session struct {
+		Cookie   string
+		Lifespan time.Duration
+	}
 	Provider interface {
 		Settings() *Config
 	}
-
 	Config struct {
 		l *xlog.Logger
 
-		mode   string
-		serve  Serve
-		sql    SQL
-		argon2 Argon2
+		mode    string
+		serve   Serve
+		sql     SQL
+		argon2  Argon2
+		session Session
 	}
 )
 
@@ -47,7 +52,7 @@ func New(l *xlog.Logger) *Config {
 	conf.mode = viper.GetString(keyMode)
 
 	// Serve
-	conf.serve.StartupMessage = viper.GetBool(keyServeStartupMessage)
+	conf.serve.StartupMessage = viper.GetBool(keyServeStartupMessageEnabled)
 	conf.serve.Public.Port = viper.GetString(keyServePublicPort)
 	conf.serve.Public.Host = viper.GetString(keyServePublicHost)
 
@@ -61,6 +66,10 @@ func New(l *xlog.Logger) *Config {
 	conf.argon2.Parallelism = uint8(viper.GetUint(keyHasherArgon2ConfigParallelism))
 	conf.argon2.SaltLength = viper.GetUint32(keyHasherArgon2ConfigSaltLength)
 	conf.argon2.KeyLength = viper.GetUint32(keyHasherArgon2ConfigKeyLength)
+
+	// Session
+	conf.session.Cookie = viper.GetString(keySessionCookie)
+	conf.session.Lifespan = viper.GetDuration(keySessionLifespan)
 
 	return conf
 }
@@ -96,4 +105,8 @@ func (c *Config) Mode() string {
 
 func (c *Config) IsProd() bool {
 	return c.mode == "prod"
+}
+
+func (c *Config) Session() Session {
+	return c.session
 }

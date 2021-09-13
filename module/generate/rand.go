@@ -5,40 +5,38 @@ import (
 	"math/big"
 )
 
-const (
-	numbers  = "0123456789"
-	alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+var rander = rand.Reader // random function
+
+var (
+	AlphaNum      = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	Alpha         = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	AlphaLowerNum = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
+	AlphaUpperNum = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	AlphaLower    = []rune("abcdefghijklmnopqrstuvwxyz")
+	AlphaUpper    = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	Numeric       = []rune("0123456789")
 )
 
-func RandomInt(max *big.Int) (int, error) {
-	rand, err := rand.Int(rand.Reader, max)
-	if err != nil {
-		return 0, err
-	}
+func RuneSequence(l int, allowedRunes []rune) (seq []rune, err error) {
+	c := big.NewInt(int64(len(allowedRunes)))
+	seq = make([]rune, l)
 
-	return int(rand.Int64()), nil
-}
-
-func RandomChars(n int, src string) (string, error) {
-	buffer := make([]byte, n)
-	max := big.NewInt(int64(len(src)))
-
-	for i := 0; i < n; i++ {
-		index, err := RandomInt(max)
+	for i := 0; i < l; i++ {
+		r, err := rand.Int(rander, c)
 		if err != nil {
-			return "", err
+			return seq, err
 		}
-
-		buffer[i] = src[index]
+		rn := allowedRunes[r.Uint64()]
+		seq[i] = rn
 	}
 
-	return string(buffer), nil
+	return seq, nil
 }
 
-func RandomString(n int) (string, error) {
-	return RandomChars(n, alphanum)
-}
-
-func RandomNumber(n int) (string, error) {
-	return RandomChars(n, numbers)
+func RandomString(l int, allowedRunes []rune) string {
+	seq, err := RuneSequence(l, allowedRunes)
+	if err != nil {
+		panic(err)
+	}
+	return string(seq)
 }

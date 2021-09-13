@@ -1,4 +1,4 @@
-package user
+package session
 
 import (
 	"context"
@@ -7,9 +7,9 @@ import (
 )
 
 type ServiceProvider interface {
-	UserService() Service
+	SessionService() Service
 }
 
 type Service interface {
-	RegisterUser(context.Context, *t.SignupRequest) (*t.SignupResponse, error)
+	IssueSession(context.Context, *t.SigninRequest) (*t.SigninResponse, error)
 }

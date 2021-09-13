@@ -8,5 +8,6 @@ type PersistenceProvider interface {
 
 type Persister interface {
 	FindUser(context.Context, uint64) (*User, error)
+	FindUserByEmail(context.Context, string) (*User, error)
 	CreateUser(context.Context, *User) error
 }

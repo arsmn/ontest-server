@@ -12,7 +12,7 @@ import (
 
 var _ app.App = new(Service)
 
-func (s *Service) Signup(ctx context.Context, req *t.SignupRequest) (*t.SignupResponse, error) {
+func (s *Service) RegisterUser(ctx context.Context, req *t.SignupRequest) (*t.SignupResponse, error) {
 	if err := v.Validate(req); err != nil {
 		return nil, err
 	}

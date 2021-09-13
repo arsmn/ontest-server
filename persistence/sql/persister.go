@@ -7,6 +7,7 @@ import (
 	"github.com/arsmn/ontest/module/sqlcon"
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/arsmn/ontest/persistence"
+	"github.com/arsmn/ontest/session"
 	"github.com/arsmn/ontest/settings"
 	"github.com/arsmn/ontest/user"
 	"github.com/cenkalti/backoff"
@@ -19,6 +20,7 @@ var _ persistence.Persister = new(Persister)
 
 var tables = []interface{}{
 	new(user.User),
+	new(session.Session),
 }
 
 type (
