@@ -1,11 +1,19 @@
 package settings
 
 import (
+	"fmt"
+
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/spf13/viper"
 )
 
 type (
+	Serve struct {
+		Public struct {
+			Port string
+			Host string
+		}
+	}
 	SQL struct {
 		DSN    string
 		Driver string
@@ -21,19 +29,24 @@ type (
 	Config struct {
 		l *xlog.Logger
 
-		sql    *SQL
-		argon2 *Argon2
+		serve  Serve
+		sql    SQL
+		argon2 Argon2
 	}
 )
 
 func New(l *xlog.Logger) *Config {
 	conf := new(Config)
 
-	// sql
+	// Serve
+	conf.serve.Public.Port = viper.GetString(keyServePublicPort)
+	conf.serve.Public.Host = viper.GetString(keyServePublicHost)
+
+	// SQL
 	conf.sql.DSN = viper.GetString(keySQLDSN)
 	conf.sql.Driver = viper.GetString(keySQLDSN)
 
-	// argon2
+	// Argon2
 	conf.argon2.Memory = viper.GetUint32(keyHasherArgon2ConfigMemory)
 	conf.argon2.Iterations = viper.GetUint32(keyHasherArgon2ConfigIterations)
 	conf.argon2.Parallelism = uint8(viper.GetUint(keyHasherArgon2ConfigParallelism))
@@ -43,10 +56,23 @@ func New(l *xlog.Logger) *Config {
 	return conf
 }
 
-func (c *Config) Argon() *Argon2 {
+func (c *Config) PublicListenOn() string {
+	return c.listenOn("public")
+}
+
+func (c *Config) listenOn(key string) string {
+	port := viper.GetInt("serve." + key + ".port")
+	if port < 1 {
+		c.l.Fatal(fmt.Sprintf("serve.%s.port can not be zero or negative", key))
+	}
+
+	return fmt.Sprintf("%s:%d", viper.GetString("serve."+key+".host"), port)
+}
+
+func (c *Config) Argon() Argon2 {
 	return c.argon2
 }
 
-func (c *Config) SQL() *SQL {
+func (c *Config) SQL() SQL {
 	return c.sql
 }

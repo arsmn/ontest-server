@@ -1,6 +1,8 @@
 package settings
 
 const (
+	keyServePublicPort               = "serve.public.port"
+	keyServePublicHost               = "serve.public.host"
 	keySQLDSN                        = "sql.dsn"
 	keySQLDriver                     = "sql.driver"
 	keyHasherArgon2ConfigMemory      = "hashers.argon2.memory"

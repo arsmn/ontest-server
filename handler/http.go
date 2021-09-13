@@ -25,7 +25,7 @@ type (
 	}
 )
 
-func NewHandler(dx dependencies) *Handler {
+func New(dx dependencies) *Handler {
 	api := &Handler{}
 
 	api.dx = dx

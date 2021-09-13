@@ -16,6 +16,10 @@ const (
 var argon2DefaultParallelism = uint8(runtime.NumCPU() * 2)
 
 func setDefaults() {
+	// Serve
+	viper.SetDefault(keyServePublicPort, 8080)
+
+	// Argon2
 	viper.SetDefault(keyHasherArgon2ConfigMemory, argon2DefaultMemory)
 	viper.SetDefault(keyHasherArgon2ConfigIterations, argon2DefaultIterations)
 	viper.SetDefault(keyHasherArgon2ConfigKeyLength, argon2DefaultSaltLength)
