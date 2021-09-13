@@ -1,6 +1,8 @@
 package xlog
 
 import (
+	"os"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -41,7 +43,10 @@ func New(opts ...Option) *Logger {
 	o := newOptions(opts)
 	encoder := makeEncoder(o.encoder)
 	writer := makeWriter()
-	core := zapcore.NewCore(encoder, writer, o.level)
+	core := zapcore.NewTee(
+		zapcore.NewCore(encoder, writer, o.level),
+		zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), o.level),
+	)
 	l := zap.New(core)
 
 	return &Logger{

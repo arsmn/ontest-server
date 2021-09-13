@@ -10,6 +10,8 @@ import (
 	"github.com/arsmn/ontest/settings"
 	"github.com/cenkalti/backoff"
 	"github.com/jmoiron/sqlx"
+
+	_ "github.com/lib/pq"
 )
 
 var _ persistence.Persister = new(Persister)

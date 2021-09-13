@@ -21,6 +21,7 @@ func startupMessage(addr string, tls bool, handlersCount, templatesCount uint32,
 	logo += " │ Handlers %s  Templates %s │\n"
 	logo += " │ Go ......%s  Threads ..%s │\n"
 	logo += " │ OS ......%s  PID ......%s │\n"
+	logo += " │ Config file %s \n"
 	logo += " └─────────────────────────────────────────────────────┘"
 	logo += "%s\n\n"
 
@@ -88,6 +89,7 @@ func startupMessage(addr string, tls bool, handlersCount, templatesCount uint32,
 		value(strconv.Itoa(int(handlersCount)), 14), value(strconv.Itoa(int(templatesCount)), 14),
 		value(runtime.Version(), 14), value(strconv.Itoa(runtime.NumCPU()), 14),
 		value(runtime.GOOS, 14), value(strconv.Itoa(os.Getpid()), 14),
+		value(cfgFile, 14),
 		cReset,
 	)
 }

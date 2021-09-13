@@ -49,7 +49,7 @@ func New(l *xlog.Logger) *Config {
 
 	// SQL
 	conf.sql.DSN = viper.GetString(keySQLDSN)
-	conf.sql.Driver = viper.GetString(keySQLDSN)
+	conf.sql.Driver = viper.GetString(keySQLDriver)
 
 	// Argon2
 	conf.argon2.Memory = viper.GetUint32(keyHasherArgon2ConfigMemory)

@@ -7,7 +7,6 @@ import (
 	"github.com/arsmn/ontest/app"
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/arsmn/ontest/persistence"
-	"github.com/arsmn/ontest/persistence/sql"
 	"github.com/arsmn/ontest/settings"
 )
 
@@ -25,12 +24,12 @@ func NewRegistryCore() *RegistryCore {
 }
 
 func (r *RegistryCore) Init(ctx context.Context) error {
-	p, err := sql.NewPersister(r)
-	if err != nil {
-		return err
-	}
+	// p, _ := sql.NewPersister(r)
+	// if err != nil {
+	// 	return err
+	// }
 
-	r.persister = p
+	// r.persister = p
 
 	return nil
 }
