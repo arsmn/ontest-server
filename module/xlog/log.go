@@ -14,16 +14,14 @@ const (
 )
 
 type (
-	Field  = zapcore.Field
+	Field    = zapcore.Field
+	Provider interface {
+		Logger() *Logger
+	}
 	Logger struct {
 		zap   *zap.Logger
 		sugar *zap.SugaredLogger
 	}
-	options struct {
-		encoder string
-		level   zapcore.Level
-	}
-	Option func(*options)
 )
 
 var (

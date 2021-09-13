@@ -1,5 +1,15 @@
 package xlog
 
+import "go.uber.org/zap/zapcore"
+
+type (
+	Option  func(*options)
+	options struct {
+		encoder string
+		level   zapcore.Level
+	}
+)
+
 func newOptions(opts []Option) *options {
 	o := new(options)
 	for _, f := range opts {

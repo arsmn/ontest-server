@@ -16,12 +16,8 @@ limitations under the License.
 package cmd
 
 import (
-	"strings"
-
+	"github.com/arsmn/ontest/settings"
 	"github.com/spf13/cobra"
-
-	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -52,32 +48,5 @@ func init() {
 }
 
 func onInit() {
-	initConfig()
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile == "" {
-		home, err := homedir.Dir()
-		cobra.CheckErr(err)
-		viper.AddConfigPath(".")
-		viper.AddConfigPath(home)
-		viper.AddConfigPath("/etc/ontest/")
-		viper.SetConfigName(".ontest")
-	} else {
-		viper.SetConfigFile(cfgFile)
-	}
-
-	viper.SetEnvPrefix("OT")
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigParseError); ok {
-			panic(err)
-		}
-		cfgFile = "No config file used"
-	} else {
-		cfgFile = "Using config file: " + viper.ConfigFileUsed()
-	}
+	cobra.CheckErr(settings.Init(cfgFile))
 }

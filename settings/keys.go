@@ -1,6 +1,7 @@
 package settings
 
 const (
+	keyServeStartupMessage           = "serve.startup_message"
 	keyServePublicPort               = "serve.public.port"
 	keyServePublicHost               = "serve.public.host"
 	keySQLDSN                        = "sql.dsn"

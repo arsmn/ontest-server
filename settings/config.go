@@ -9,7 +9,8 @@ import (
 
 type (
 	Serve struct {
-		Public struct {
+		StartupMessage bool
+		Public         struct {
 			Port string
 			Host string
 		}
@@ -25,6 +26,9 @@ type (
 		SaltLength  uint32
 		KeyLength   uint32
 	}
+	Provider interface {
+		Settings() *Config
+	}
 
 	Config struct {
 		l *xlog.Logger
@@ -39,6 +43,7 @@ func New(l *xlog.Logger) *Config {
 	conf := new(Config)
 
 	// Serve
+	conf.serve.StartupMessage = viper.GetBool(keyServeStartupMessage)
 	conf.serve.Public.Port = viper.GetString(keyServePublicPort)
 	conf.serve.Public.Host = viper.GetString(keyServePublicHost)
 
@@ -54,6 +59,10 @@ func New(l *xlog.Logger) *Config {
 	conf.argon2.KeyLength = viper.GetUint32(keyHasherArgon2ConfigKeyLength)
 
 	return conf
+}
+
+func (c *Config) StartupMessageEnabled() bool {
+	return c.serve.StartupMessage
 }
 
 func (c *Config) PublicListenOn() string {

@@ -2,12 +2,12 @@ package daemon
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/arsmn/ontest/driver"
 	"github.com/arsmn/ontest/handler"
+	"github.com/arsmn/ontest/settings"
 	"github.com/ory/graceful"
 )
 
@@ -25,7 +25,10 @@ func ServePublic(ctx context.Context, r driver.Registry, wg *sync.WaitGroup, arg
 		Handler: handler,
 	})
 
-	l.Info(fmt.Sprintf("Starting the public httpd on: %s", server.Addr))
+	if s.StartupMessageEnabled() {
+		startupMessage(server.Addr, false, h.HandlersCount(), h.TemplatesCount(), settings.ConfigFileUsed())
+	}
+
 	if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
 		l.Fatal("Failed to gracefully shutdown public httpd")
 	}

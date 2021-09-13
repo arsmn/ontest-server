@@ -17,6 +17,7 @@ var argon2DefaultParallelism = uint8(runtime.NumCPU() * 2)
 
 func setDefaults() {
 	// Serve
+	viper.SetDefault(keyServeStartupMessage, true)
 	viper.SetDefault(keyServePublicPort, 8080)
 
 	// Argon2

@@ -42,8 +42,12 @@ func (api *Handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	api.handler.ServeHTTP(rw, r)
 }
 
-func (a *Handler) String() string {
-	return ""
+func (a *Handler) HandlersCount() uint32 {
+	return a.count
+}
+
+func (a *Handler) TemplatesCount() uint32 {
+	return 0
 }
 
 func (a *Handler) clown(fn handleFunc) http.HandlerFunc {
