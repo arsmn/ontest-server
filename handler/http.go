@@ -11,8 +11,8 @@ import (
 )
 
 type (
-	ctx                 = context.Context
-	handleFunc          func(*ctx) error
+	Context             = context.Context
+	HandleFunc          func(*Context) error
 	handlerDependencies interface {
 		app.Provider
 		settings.Provider
@@ -49,7 +49,7 @@ func (h *Handler) TemplatesCount() uint32 {
 	return 0
 }
 
-func (h *Handler) clown(fn handleFunc) http.HandlerFunc {
+func (h *Handler) clown(fn HandleFunc) http.HandlerFunc {
 	h.count++
 
 	handler := http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {

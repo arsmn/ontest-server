@@ -12,16 +12,16 @@ func (h *Handler) authRouter(r chi.Router) {
 	r.Post("/signup", h.clown(h.signup))
 }
 
-func (h *Handler) signup(c *ctx) error {
+func (h *Handler) signup(ctx *Context) error {
 	req := new(t.SignupRequest)
-	if err := c.BindJson(req); err != nil {
+	if err := ctx.BindJson(req); err != nil {
 		return err
 	}
 
-	_, err := h.dx.App().Signup(c.Request().Context(), req)
+	_, err := h.dx.App().Signup(ctx.Request().Context(), req)
 	if err != nil {
 		return err
 	}
 
-	return c.SendStatus(http.StatusCreated)
+	return ctx.SendStatus(http.StatusCreated)
 }

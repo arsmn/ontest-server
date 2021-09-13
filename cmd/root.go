@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/arsmn/ontest/module/generate"
 	"github.com/arsmn/ontest/settings"
 	"github.com/spf13/cobra"
 )
@@ -49,4 +50,5 @@ func init() {
 
 func onInit() {
 	cobra.CheckErr(settings.Init(cfgFile))
+	cobra.CheckErr(generate.Init())
 }

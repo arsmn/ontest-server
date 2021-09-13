@@ -14,7 +14,7 @@ type SignupRequest struct {
 
 func (r SignupRequest) Validate() error {
 	return v.ValidateStruct(&r,
-		v.Field(&r.Email, is.Email),
+		v.Field(&r.Email, v.Required, is.Email),
 		v.Field(&r.LastName, v.Required, v.Length(3, 50)),
 		v.Field(&r.Password, v.Required, v.Length(5, 50)),
 		v.Field(&r.FirstName, v.Required, v.Length(3, 50)),

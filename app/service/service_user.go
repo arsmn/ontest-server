@@ -24,6 +24,7 @@ func (s *Service) Signup(ctx context.Context, req *t.SignupRequest) (*t.SignupRe
 
 	u := &user.User{
 		ID:       generate.UID(),
+		Username: generate.HFUID(),
 		Email:    req.Email,
 		IsActive: true,
 		Password: string(pswd),

@@ -1,6 +1,8 @@
 package generate
 
 import (
+	"errors"
+
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/sony/sonyflake"
 )
@@ -9,11 +11,13 @@ var (
 	sf *sonyflake.Sonyflake
 )
 
-func Init() {
+func Init() error {
 	sf = sonyflake.NewSonyflake(sonyflake.Settings{})
 	if sf == nil {
-		panic("sonyflake not created")
+		return errors.New("unable to init sonyflake")
 	}
+
+	return nil
 }
 
 func UID() uint64 {
