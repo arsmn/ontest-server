@@ -129,5 +129,9 @@ func ToDefaultError(err error, id string) *DefaultError {
 		de.StatusField = http.StatusText(de.StatusCode())
 	}
 
+	if de.StatusCode() == http.StatusInternalServerError {
+		de.ErrorField = "an error occured"
+	}
+
 	return de
 }

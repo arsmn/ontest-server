@@ -11,47 +11,46 @@ import (
 )
 
 type (
-	handleFunc func(ctx *context.Context) error
-
-	dependencies interface {
+	ctx                 = context.Context
+	handleFunc          func(*ctx) error
+	handlerDependencies interface {
 		app.Provider
 		settings.Provider
 	}
-
 	Handler struct {
-		dx      dependencies
+		dx      handlerDependencies
 		handler http.Handler
 		count   uint32
 	}
 )
 
-func New(dx dependencies) *Handler {
-	api := &Handler{}
+func New(dx handlerDependencies) *Handler {
+	h := new(Handler)
 
-	api.dx = dx
+	h.dx = dx
 
 	root := chi.NewRouter()
-	root.Route("/auth", api.authRouter)
+	root.Route("/auth", h.authRouter)
 
-	api.handler = root
+	h.handler = root
 
-	return api
+	return h
 }
 
-func (api *Handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	api.handler.ServeHTTP(rw, r)
+func (h *Handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	h.handler.ServeHTTP(rw, r)
 }
 
-func (a *Handler) HandlersCount() uint32 {
-	return a.count
+func (h *Handler) HandlersCount() uint32 {
+	return h.count
 }
 
-func (a *Handler) TemplatesCount() uint32 {
+func (h *Handler) TemplatesCount() uint32 {
 	return 0
 }
 
-func (a *Handler) clown(fn handleFunc) http.HandlerFunc {
-	a.count++
+func (h *Handler) clown(fn handleFunc) http.HandlerFunc {
+	h.count++
 
 	handler := http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		ctx := context.Acquire(rw, r)

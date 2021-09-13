@@ -5,8 +5,9 @@ import (
 )
 
 type Context struct {
-	request  *http.Request
-	response http.ResponseWriter
+	request    *http.Request
+	response   http.ResponseWriter
+	statusCode int
 }
 
 func (ctx *Context) Request() *http.Request {

@@ -3,33 +3,39 @@ package context
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
-func (ctx *Context) JSON(data interface{}) error {
+func (ctx *Context) Json(status int, data interface{}) error {
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(data); err != nil {
 		return err
 	}
 
 	ctx.response.Header().Set("Content-Type", "application/json; charset=utf-8")
+	ctx.response.WriteHeader(status)
 	_, err := ctx.response.Write(buf.Bytes())
 	return err
 }
 
-func (ctx *Context) Status(status int) *Context {
+func (ctx *Context) String(status int, data string) error {
+	ctx.response.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	ctx.response.WriteHeader(status)
-	return ctx
+	_, err := fmt.Fprintln(ctx.response, data)
+	return err
 }
 
 func (ctx *Context) SendStatus(status int) error {
-	ctx.Status(status)
-	http.Error(ctx.response, http.StatusText(status), status)
-	return nil
+	ctx.response.Header().Set("X-Content-Type-Options", "nosniff")
+	return ctx.String(status, http.StatusText(status))
+}
+
+func (ctx *Context) OK(data interface{}) error {
+	return ctx.Json(http.StatusOK, data)
 }
 
 func (ctx *Context) Created(location string, data interface{}) error {
 	ctx.response.Header().Set("Location", location)
-	ctx.Status(http.StatusCreated)
-	return ctx.JSON(data)
+	return ctx.Json(http.StatusCreated, data)
 }

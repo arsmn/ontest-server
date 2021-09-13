@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/arsmn/ontest/app"
+	"github.com/arsmn/ontest/app/service"
 	"github.com/arsmn/ontest/module/xlog"
 	"github.com/arsmn/ontest/persistence"
 	"github.com/arsmn/ontest/settings"
@@ -30,6 +31,8 @@ func (r *RegistryCore) Init(ctx context.Context) error {
 	// }
 
 	// r.persister = p
+
+	r.app = service.NewApp(r)
 
 	return nil
 }
