@@ -26,7 +26,7 @@ func (h *Handler) signin(ctx *Context) error {
 	s := h.dx.Settings().Session()
 	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()))
 
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.OK(Map{"token": res.Token})
 }
 
 func (h *Handler) signup(ctx *Context) error {

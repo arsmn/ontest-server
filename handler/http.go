@@ -11,6 +11,7 @@ import (
 )
 
 type (
+	Map                 = context.Map
 	Context             = context.Context
 	HandleFunc          func(*Context) error
 	handlerDependencies interface {

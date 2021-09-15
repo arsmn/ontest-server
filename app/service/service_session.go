@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/arsmn/ontest/app"
 	"github.com/arsmn/ontest/module/generate"
 	v "github.com/arsmn/ontest/module/validation"
+	"github.com/arsmn/ontest/persistence"
 	"github.com/arsmn/ontest/session"
 	t "github.com/arsmn/ontest/transport"
 )
@@ -17,11 +20,14 @@ func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*t.Si
 
 	user, err := s.dx.Persister().FindUserByEmail(ctx, req.Email)
 	if err != nil {
+		if errors.Is(err, persistence.ErrNoRows) {
+			return nil, app.ErrInvalidCredentials
+		}
 		return nil, err
 	}
 
 	if err := s.dx.Hasher().Compare(ctx, []byte(req.Password), []byte(user.Password)); err != nil {
-		return nil, err
+		return nil, app.ErrInvalidCredentials
 	}
 
 	sess := &session.Session{

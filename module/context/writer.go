@@ -8,6 +8,8 @@ import (
 	"net/url"
 )
 
+type Map map[string]interface{}
+
 func (ctx *Context) Json(status int, data interface{}) error {
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(data); err != nil {
