@@ -3,7 +3,7 @@ package validation
 import (
 	"net/http"
 
-	"github.com/arsmn/ontest/module/errors"
+	"github.com/arsmn/ontest-server/module/errors"
 )
 
 var (

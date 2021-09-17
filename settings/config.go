@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/arsmn/ontest/module/xlog"
+	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/spf13/viper"
 )
 

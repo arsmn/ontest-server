@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	t "github.com/arsmn/ontest/transport"
+	t "github.com/arsmn/ontest-server/transport"
 	"github.com/go-chi/chi/v5"
 )
 

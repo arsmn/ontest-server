@@ -11,7 +11,7 @@ import (
 
 	"errors"
 
-	"github.com/arsmn/ontest/settings"
+	"github.com/arsmn/ontest-server/settings"
 	"golang.org/x/crypto/argon2"
 )
 

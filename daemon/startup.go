@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/arsmn/ontest/module/httplib"
+	"github.com/arsmn/ontest-server/module/httplib"
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 )

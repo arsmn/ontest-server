@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/arsmn/ontest/cmd"
+import "github.com/arsmn/ontest-server/cmd"
 
 func main() {
 	cmd.Execute()

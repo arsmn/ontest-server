@@ -3,8 +3,8 @@ package persistence
 import (
 	"context"
 
-	"github.com/arsmn/ontest/session"
-	"github.com/arsmn/ontest/user"
+	"github.com/arsmn/ontest-server/session"
+	"github.com/arsmn/ontest-server/user"
 )
 
 type Provider interface {

@@ -16,8 +16,8 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/arsmn/ontest/daemon"
-	"github.com/arsmn/ontest/driver"
+	"github.com/arsmn/ontest-server/daemon"
+	"github.com/arsmn/ontest-server/driver"
 	"github.com/spf13/cobra"
 )
 

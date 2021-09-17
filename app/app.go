@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/arsmn/ontest/session"
-	"github.com/arsmn/ontest/user"
+	"github.com/arsmn/ontest-server/session"
+	"github.com/arsmn/ontest-server/user"
 )
 
 type Provider interface {

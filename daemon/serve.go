@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/arsmn/ontest/driver"
-	"github.com/arsmn/ontest/handler"
-	"github.com/arsmn/ontest/settings"
+	"github.com/arsmn/ontest-server/driver"
+	"github.com/arsmn/ontest-server/handler"
+	"github.com/arsmn/ontest-server/settings"
 	"github.com/ory/graceful"
 )
 

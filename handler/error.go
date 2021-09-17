@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/arsmn/ontest/module/context"
-	"github.com/arsmn/ontest/module/errors"
+	"github.com/arsmn/ontest-server/module/context"
+	"github.com/arsmn/ontest-server/module/errors"
 )
 
 type jsonError struct {

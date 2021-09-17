@@ -16,8 +16,8 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/arsmn/ontest/module/generate"
-	"github.com/arsmn/ontest/settings"
+	"github.com/arsmn/ontest-server/module/generate"
+	"github.com/arsmn/ontest-server/settings"
 	"github.com/spf13/cobra"
 )
 

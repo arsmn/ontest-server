@@ -3,8 +3,8 @@ package sql
 import (
 	"context"
 
-	"github.com/arsmn/ontest/persistence"
-	"github.com/arsmn/ontest/session"
+	"github.com/arsmn/ontest-server/persistence"
+	"github.com/arsmn/ontest-server/session"
 	"xorm.io/xorm"
 )
 

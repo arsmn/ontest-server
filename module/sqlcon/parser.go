@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/arsmn/ontest/module/xlog"
+	"github.com/arsmn/ontest-server/module/xlog"
 )
 
 func ParseConnectionOptions(l *xlog.Logger, dsn string) (maxConns int, maxIdleConns int, maxConnLifetime time.Duration, cleanedDSN string) {

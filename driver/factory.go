@@ -3,8 +3,8 @@ package driver
 import (
 	"context"
 
-	"github.com/arsmn/ontest/module/xlog"
-	"github.com/arsmn/ontest/settings"
+	"github.com/arsmn/ontest-server/module/xlog"
+	"github.com/arsmn/ontest-server/settings"
 )
 
 func New(ctx context.Context) Registry {

@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/arsmn/ontest/app"
-	"github.com/arsmn/ontest/module/context"
-	"github.com/arsmn/ontest/settings"
+	"github.com/arsmn/ontest-server/app"
+	"github.com/arsmn/ontest-server/module/context"
+	"github.com/arsmn/ontest-server/settings"
 
 	"github.com/go-chi/chi/v5"
 )

@@ -5,12 +5,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/arsmn/ontest/app"
-	"github.com/arsmn/ontest/module/generate"
-	v "github.com/arsmn/ontest/module/validation"
-	"github.com/arsmn/ontest/persistence"
-	"github.com/arsmn/ontest/session"
-	t "github.com/arsmn/ontest/transport"
+	"github.com/arsmn/ontest-server/app"
+	"github.com/arsmn/ontest-server/module/generate"
+	v "github.com/arsmn/ontest-server/module/validation"
+	"github.com/arsmn/ontest-server/persistence"
+	"github.com/arsmn/ontest-server/session"
+	t "github.com/arsmn/ontest-server/transport"
 )
 
 func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*t.SigninResponse, error) {

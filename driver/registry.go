@@ -3,11 +3,11 @@ package driver
 import (
 	"context"
 
-	"github.com/arsmn/ontest/app"
-	"github.com/arsmn/ontest/module/hash"
-	"github.com/arsmn/ontest/module/xlog"
-	"github.com/arsmn/ontest/persistence"
-	"github.com/arsmn/ontest/settings"
+	"github.com/arsmn/ontest-server/app"
+	"github.com/arsmn/ontest-server/module/hash"
+	"github.com/arsmn/ontest-server/module/xlog"
+	"github.com/arsmn/ontest-server/persistence"
+	"github.com/arsmn/ontest-server/settings"
 )
 
 type Registry interface {

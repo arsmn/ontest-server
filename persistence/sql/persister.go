@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/arsmn/ontest/module/sqlcon"
-	"github.com/arsmn/ontest/module/xlog"
-	"github.com/arsmn/ontest/persistence"
-	"github.com/arsmn/ontest/session"
-	"github.com/arsmn/ontest/settings"
-	"github.com/arsmn/ontest/user"
+	"github.com/arsmn/ontest-server/module/sqlcon"
+	"github.com/arsmn/ontest-server/module/xlog"
+	"github.com/arsmn/ontest-server/persistence"
+	"github.com/arsmn/ontest-server/session"
+	"github.com/arsmn/ontest-server/settings"
+	"github.com/arsmn/ontest-server/user"
 	"github.com/cenkalti/backoff"
 	"xorm.io/xorm"
 

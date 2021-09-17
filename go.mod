@@ -1,4 +1,4 @@
-module github.com/arsmn/ontest
+module github.com/arsmn/ontest-server
 
 go 1.17
 

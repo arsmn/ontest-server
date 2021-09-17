@@ -3,7 +3,7 @@ package session
 import (
 	"context"
 
-	t "github.com/arsmn/ontest/transport"
+	t "github.com/arsmn/ontest-server/transport"
 )
 
 type ServiceProvider interface {

@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 
-	"github.com/arsmn/ontest/app"
-	"github.com/arsmn/ontest/module/generate"
-	v "github.com/arsmn/ontest/module/validation"
-	t "github.com/arsmn/ontest/transport"
-	"github.com/arsmn/ontest/user"
+	"github.com/arsmn/ontest-server/app"
+	"github.com/arsmn/ontest-server/module/generate"
+	v "github.com/arsmn/ontest-server/module/validation"
+	t "github.com/arsmn/ontest-server/transport"
+	"github.com/arsmn/ontest-server/user"
 )
 
 var _ app.App = new(Service)

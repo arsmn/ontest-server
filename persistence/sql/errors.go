@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	stdErr "errors"
 
-	"github.com/arsmn/ontest/persistence"
+	"github.com/arsmn/ontest-server/persistence"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgconn"
 	"github.com/lib/pq"
