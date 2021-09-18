@@ -17,7 +17,7 @@ type User struct {
 
 	CreatedAt time.Time `xorm:"created" json:"created_at,omitempty"`
 	UpdatedAt time.Time `xorm:"updated" json:"updated_at,omitempty"`
-	DeletedAt time.Time `xorm:"deleted" json:"deleted_at,omitempty"`
+	DeletedAt time.Time `xorm:"deleted" json:"-"`
 }
 
 var defaultSanitizeFields = []string{

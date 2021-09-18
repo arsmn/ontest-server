@@ -29,6 +29,7 @@ type (
 	}
 	Session struct {
 		Cookie   string
+		Domain   string
 		Lifespan time.Duration
 	}
 	Provider interface {
@@ -68,6 +69,7 @@ func New(l *xlog.Logger) *Config {
 	conf.argon2.KeyLength = viper.GetUint32(keyHasherArgon2ConfigKeyLength)
 
 	// Session
+	conf.session.Domain = viper.GetString(keySessionDomain)
 	conf.session.Cookie = viper.GetString(keySessionCookie)
 	conf.session.Lifespan = viper.GetDuration(keySessionLifespan)
 

@@ -14,4 +14,5 @@ const (
 	keyHasherArgon2ConfigKeyLength   = "hashers.argon2.key_length"
 	keySessionCookie                 = "session.cookie"
 	keySessionLifespan               = "session.lifespan"
+	keySessionDomain                 = "session.domain"
 )

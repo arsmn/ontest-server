@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"net/http"
-
 	t "github.com/arsmn/ontest-server/transport"
 	"github.com/go-chi/chi/v5"
 )
@@ -25,9 +23,9 @@ func (h *Handler) signin(ctx *Context) error {
 	}
 
 	s := h.dx.Settings().Session()
-	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()))
+	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()), "/", s.Domain)
 
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.OK(success)
 }
 
 func (h *Handler) signup(ctx *Context) error {
@@ -41,10 +39,10 @@ func (h *Handler) signup(ctx *Context) error {
 		return err
 	}
 
-	return ctx.SendStatus(http.StatusCreated)
+	return ctx.Created("/auth/whoami", success)
 }
 
 func (h *Handler) whoami(ctx *Context) error {
 	u := ctx.User().CopySanitize("Password")
-	return ctx.OK(data(u))
+	return ctx.OK(payload(u))
 }

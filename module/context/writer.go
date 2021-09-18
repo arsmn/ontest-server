@@ -45,11 +45,11 @@ func (ctx *Context) Created(location string, data interface{}) error {
 	return ctx.Json(http.StatusCreated, data)
 }
 
-func (ctx *Context) SetCookie(name, value string, maxAge int, path, domain string, secure, httpOnly bool) {
+func (ctx *Context) SetCookie(name, value string, maxAge int, path, domain string, secure, httpOnly bool, sameSite http.SameSite) {
 	if path == "" {
 		path = "/"
 	}
-	host, _ := httplib.ParseAddr(ctx.request.Host)
+	host, _ := httplib.ParseAddr(domain)
 
 	http.SetCookie(ctx.response, &http.Cookie{
 		Name:     name,
@@ -57,18 +57,18 @@ func (ctx *Context) SetCookie(name, value string, maxAge int, path, domain strin
 		MaxAge:   maxAge,
 		Path:     path,
 		Domain:   host,
-		SameSite: http.SameSiteDefaultMode,
+		SameSite: sameSite,
 		Secure:   secure,
 		HttpOnly: httpOnly,
 	})
 }
 
-func (ctx *Context) SetSecureCookie(name, value string, maxAge int) {
-	ctx.SetCookie(name, value, maxAge, "/", ctx.request.Host, true, true)
+func (ctx *Context) SetSecureCookie(name, value string, maxAge int, path, domain string) {
+	ctx.SetCookie(name, value, maxAge, path, domain, true, true, http.SameSiteNoneMode)
 }
 
 func (ctx *Context) RemoveCookie(name string) {
-	ctx.SetCookie(name, "", -1, "/", ctx.request.Host, false, false)
+	ctx.SetCookie(name, "", -1, "/", ctx.request.Host, false, false, http.SameSiteDefaultMode)
 }
 
 func (ctx *Context) Cookie(name string) (string, error) {

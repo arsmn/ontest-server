@@ -33,7 +33,19 @@ func New(dx handlerDependencies) *Handler {
 
 	root := chi.NewRouter()
 
-	root.Use(cors.AllowAll().Handler)
+	root.Use(cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:5004"},
+		AllowedMethods: []string{
+			http.MethodHead,
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+		},
+		AllowedHeaders:   []string{"Origin", "Accept", "Content-Type", "X-Requested-With"},
+		AllowCredentials: true,
+	}).Handler)
 
 	root.Route("/auth", h.authRouter)
 
