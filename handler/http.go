@@ -6,6 +6,7 @@ import (
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/context"
 	"github.com/arsmn/ontest-server/settings"
+	"github.com/rs/cors"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -31,6 +32,9 @@ func New(dx handlerDependencies) *Handler {
 	h.dx = dx
 
 	root := chi.NewRouter()
+
+	root.Use(cors.AllowAll().Handler)
+
 	root.Route("/auth", h.authRouter)
 
 	h.handler = root

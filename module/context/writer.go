@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/arsmn/ontest-server/module/httplib"
 )
 
 type Map map[string]interface{}
@@ -47,13 +49,14 @@ func (ctx *Context) SetCookie(name, value string, maxAge int, path, domain strin
 	if path == "" {
 		path = "/"
 	}
+	host, _ := httplib.ParseAddr(ctx.request.Host)
 
 	http.SetCookie(ctx.response, &http.Cookie{
 		Name:     name,
 		Value:    url.QueryEscape(value),
 		MaxAge:   maxAge,
 		Path:     path,
-		Domain:   domain,
+		Domain:   host,
 		SameSite: http.SameSiteDefaultMode,
 		Secure:   secure,
 		HttpOnly: httpOnly,
@@ -61,19 +64,10 @@ func (ctx *Context) SetCookie(name, value string, maxAge int, path, domain strin
 }
 
 func (ctx *Context) SetSecureCookie(name, value string, maxAge int) {
-	http.SetCookie(ctx.response, &http.Cookie{
-		Name:     name,
-		Value:    url.QueryEscape(value),
-		MaxAge:   maxAge,
-		Path:     "/",
-		Domain:   ctx.request.Host,
-		SameSite: http.SameSiteDefaultMode,
-		Secure:   true,
-		HttpOnly: true,
-	})
+	ctx.SetCookie(name, value, maxAge, "/", ctx.request.Host, true, true)
 }
 
-func (ctx *Context) RemoveCookie(w http.ResponseWriter, r *http.Request, name string) {
+func (ctx *Context) RemoveCookie(name string) {
 	ctx.SetCookie(name, "", -1, "/", ctx.request.Host, false, false)
 }
 

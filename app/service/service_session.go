@@ -13,7 +13,13 @@ import (
 	t "github.com/arsmn/ontest-server/transport"
 )
 
-func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*t.SigninResponse, error) {
+var _ app.App = new(Service)
+
+func (s *Service) GetSession(ctx context.Context, token string) (*session.Session, error) {
+	return s.dx.Persister().FindSessionByToken(ctx, token)
+}
+
+func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*session.Session, error) {
 	if err := v.Validate(req); err != nil {
 		return nil, err
 	}
@@ -43,7 +49,5 @@ func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*t.Si
 		return nil, err
 	}
 
-	return &t.SigninResponse{
-		Token: sess.Token,
-	}, nil
+	return sess, nil
 }

@@ -21,8 +21,6 @@ func (r SignupRequest) Validate() error {
 	)
 }
 
-type SignupResponse struct{}
-
 type SigninRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -35,6 +33,6 @@ func (r SigninRequest) Validate() error {
 	)
 }
 
-type SigninResponse struct {
+type WhoamiRequest struct {
 	Token string
 }

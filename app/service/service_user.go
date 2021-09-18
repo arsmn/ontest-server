@@ -12,7 +12,11 @@ import (
 
 var _ app.App = new(Service)
 
-func (s *Service) RegisterUser(ctx context.Context, req *t.SignupRequest) (*t.SignupResponse, error) {
+func (s *Service) GetUser(ctx context.Context, id uint64) (*user.User, error) {
+	return s.dx.Persister().FindUser(ctx, id)
+}
+
+func (s *Service) RegisterUser(ctx context.Context, req *t.SignupRequest) (*user.User, error) {
 	if err := v.Validate(req); err != nil {
 		return nil, err
 	}
@@ -30,5 +34,9 @@ func (s *Service) RegisterUser(ctx context.Context, req *t.SignupRequest) (*t.Si
 		Password: string(pswd),
 	}
 
-	return nil, s.dx.Persister().CreateUser(ctx, u)
+	if err := s.dx.Persister().CreateUser(ctx, u); err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }

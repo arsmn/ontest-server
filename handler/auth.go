@@ -10,6 +10,7 @@ import (
 func (h *Handler) authRouter(r chi.Router) {
 	r.Post("/signin", h.clown(h.signin))
 	r.Post("/signup", h.clown(h.signup))
+	r.Get("/whoami", h.clown(h.withUser(h.whoami)))
 }
 
 func (h *Handler) signin(ctx *Context) error {
@@ -26,7 +27,7 @@ func (h *Handler) signin(ctx *Context) error {
 	s := h.dx.Settings().Session()
 	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()))
 
-	return ctx.OK(Map{"token": res.Token})
+	return ctx.SendStatus(http.StatusOK)
 }
 
 func (h *Handler) signup(ctx *Context) error {
@@ -41,4 +42,9 @@ func (h *Handler) signup(ctx *Context) error {
 	}
 
 	return ctx.SendStatus(http.StatusCreated)
+}
+
+func (h *Handler) whoami(ctx *Context) error {
+	u := ctx.User().CopySanitize("Password")
+	return ctx.OK(data(u))
 }

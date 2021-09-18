@@ -11,5 +11,6 @@ type ServiceProvider interface {
 }
 
 type Service interface {
-	IssueSession(context.Context, *t.SigninRequest) (*t.SigninResponse, error)
+	GetSession(context.Context, string) (*Session, error)
+	IssueSession(context.Context, *t.SigninRequest) (*Session, error)
 }

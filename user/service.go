@@ -11,5 +11,6 @@ type ServiceProvider interface {
 }
 
 type Service interface {
-	RegisterUser(context.Context, *t.SignupRequest) (*t.SignupResponse, error)
+	GetUser(context.Context, uint64) (*User, error)
+	RegisterUser(context.Context, *t.SignupRequest) (*User, error)
 }
