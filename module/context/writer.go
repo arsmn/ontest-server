@@ -84,3 +84,13 @@ func (ctx *Context) Cookie(name string) (string, error) {
 
 	return val, nil
 }
+
+func (ctx *Context) TemporaryRedirect(url string) error {
+	http.Redirect(ctx.response, ctx.request, url, http.StatusTemporaryRedirect)
+	return nil
+}
+
+func (ctx *Context) PermanentRedirect(url string) error {
+	http.Redirect(ctx.response, ctx.request, url, http.StatusPermanentRedirect)
+	return nil
+}

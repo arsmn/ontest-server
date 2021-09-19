@@ -33,3 +33,8 @@ func (p *Persister) CreateSession(_ context.Context, s *session.Session) error {
 	_, err := p.engine.InsertOne(s)
 	return handleError(err)
 }
+
+func (p *Persister) RemoveSession(_ context.Context, id uint64) error {
+	_, err := p.engine.ID(id).Delete(new(session.Session))
+	return err
+}

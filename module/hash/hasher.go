@@ -7,6 +7,6 @@ type Hasher interface {
 	Generate(ctx context.Context, password []byte) ([]byte, error)
 }
 
-type HashProvider interface {
+type Provider interface {
 	Hasher() Hasher
 }

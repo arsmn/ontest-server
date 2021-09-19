@@ -7,6 +7,7 @@ import (
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/app/service"
 	"github.com/arsmn/ontest-server/module/hash"
+	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/persistence"
 	"github.com/arsmn/ontest-server/persistence/sql"
@@ -21,6 +22,10 @@ type RegistryCore struct {
 	app            app.App
 	persister      persistence.Persister
 	passwordHasher hash.Hasher
+
+	googleOAuth   oauth.OAuther
+	githubOAuth   oauth.OAuther
+	linkedinOAuth oauth.OAuther
 }
 
 func NewRegistryCore() *RegistryCore {
@@ -68,4 +73,17 @@ func (r *RegistryCore) Persister() persistence.Persister {
 
 func (r *RegistryCore) Hasher() hash.Hasher {
 	return r.passwordHasher
+}
+
+func (r *RegistryCore) OAuther(typ oauth.OAuthProviderType) oauth.OAuther {
+	switch typ {
+	case oauth.GoogleType:
+		return r.googleOAuth
+	case oauth.GitHubType:
+		return r.githubOAuth
+	case oauth.LinkedInType:
+		return r.linkedinOAuth
+	default:
+		return oauth.NewOAutherNop()
+	}
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/context"
+	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/settings"
 	"github.com/rs/cors"
 
@@ -18,6 +19,7 @@ type (
 	handlerDependencies interface {
 		app.Provider
 		settings.Provider
+		oauth.Provider
 	}
 	Handler struct {
 		dx      handlerDependencies
@@ -48,6 +50,7 @@ func New(dx handlerDependencies) *Handler {
 	}).Handler)
 
 	root.Route("/auth", h.authRouter)
+	root.Route("/oauth", h.oauthHandler)
 
 	h.handler = root
 

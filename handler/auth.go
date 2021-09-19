@@ -8,6 +8,7 @@ import (
 func (h *Handler) authRouter(r chi.Router) {
 	r.Post("/signin", h.clown(h.signin))
 	r.Post("/signup", h.clown(h.signup))
+	r.Post("/signout", h.clown(h.withUser(h.signout)))
 	r.Get("/whoami", h.clown(h.withUser(h.whoami)))
 }
 
@@ -23,7 +24,7 @@ func (h *Handler) signin(ctx *Context) error {
 	}
 
 	s := h.dx.Settings().Session()
-	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()), "/", s.Domain)
+	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()), "/", h.dx.Settings().Domain())
 
 	return ctx.OK(success)
 }
@@ -40,6 +41,22 @@ func (h *Handler) signup(ctx *Context) error {
 	}
 
 	return ctx.Created("/auth/whoami", success)
+}
+
+func (h *Handler) signout(ctx *Context) error {
+	c := h.dx.Settings().Session().Cookie
+	token, err := ctx.Cookie(c)
+	if err != nil {
+		return err
+	}
+
+	err = h.dx.App().DeleteSession(ctx.Request().Context(), token)
+	if err != nil {
+		return err
+	}
+
+	ctx.RemoveCookie(h.dx.Settings().Session().Cookie)
+	return ctx.OK(success)
 }
 
 func (h *Handler) whoami(ctx *Context) error {

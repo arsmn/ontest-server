@@ -16,6 +16,8 @@ const (
 	hasherArgon2DefaultKeyLength  uint32 = 32
 	sessionDefaultCookie                 = "ot_token"
 	sessionDefaultLifespan               = time.Hour * 24
+	oauthDefaultStateCookie              = "ot_state"
+	oauthDefaultCookieLifespan           = time.Hour * 24
 )
 
 var hasherArgon2DefaultParallelism = uint8(runtime.NumCPU())
@@ -37,4 +39,8 @@ func setDefaults() {
 	// Session
 	viper.SetDefault(keySessionCookie, sessionDefaultCookie)
 	viper.SetDefault(keySessionLifespan, sessionDefaultLifespan)
+
+	// OAuth
+	viper.SetDefault(keyOAuthStateCookie, oauthDefaultStateCookie)
+	viper.SetDefault(keyOAuthCookieLifespan, oauthDefaultCookieLifespan)
 }

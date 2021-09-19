@@ -15,7 +15,7 @@ type (
 		xlog.Provider
 		settings.Provider
 		persistence.Provider
-		hash.HashProvider
+		hash.Provider
 	}
 	Service struct {
 		dx serviceDependencies

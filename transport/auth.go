@@ -6,10 +6,10 @@ import (
 )
 
 type SignupRequest struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+	Email     string `json:"email,omitempty"`
+	Password  string `json:"password,omitempty"`
 }
 
 func (r SignupRequest) Validate() error {
@@ -22,8 +22,8 @@ func (r SignupRequest) Validate() error {
 }
 
 type SigninRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 func (r SigninRequest) Validate() error {
@@ -35,4 +35,16 @@ func (r SigninRequest) Validate() error {
 
 type WhoamiRequest struct {
 	Token string
+}
+
+type OAuthSignRequest struct {
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+	Email     string `json:"email,omitempty"`
+}
+
+func (r OAuthSignRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Email, v.Required, is.Email),
+	)
 }

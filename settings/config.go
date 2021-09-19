@@ -6,10 +6,12 @@ import (
 
 	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/spf13/viper"
+	"golang.org/x/oauth2"
 )
 
 type (
 	Serve struct {
+		Domain         string
 		StartupMessage bool
 		Public         struct {
 			Port string
@@ -29,8 +31,14 @@ type (
 	}
 	Session struct {
 		Cookie   string
-		Domain   string
 		Lifespan time.Duration
+	}
+	OAuth struct {
+		StateCookie    string
+		CookieLifespan time.Duration
+		Google         oauth2.Config
+		GitHub         oauth2.Config
+		LinkedIn       oauth2.Config
 	}
 	Provider interface {
 		Settings() *Config
@@ -43,6 +51,7 @@ type (
 		sql     SQL
 		argon2  Argon2
 		session Session
+		oauth   OAuth
 	}
 )
 
@@ -53,6 +62,7 @@ func New(l *xlog.Logger) *Config {
 	conf.mode = viper.GetString(keyMode)
 
 	// Serve
+	conf.serve.Domain = viper.GetString(keyServeStartupMessageEnabled)
 	conf.serve.StartupMessage = viper.GetBool(keyServeStartupMessageEnabled)
 	conf.serve.Public.Port = viper.GetString(keyServePublicPort)
 	conf.serve.Public.Host = viper.GetString(keyServePublicHost)
@@ -69,9 +79,24 @@ func New(l *xlog.Logger) *Config {
 	conf.argon2.KeyLength = viper.GetUint32(keyHasherArgon2ConfigKeyLength)
 
 	// Session
-	conf.session.Domain = viper.GetString(keySessionDomain)
 	conf.session.Cookie = viper.GetString(keySessionCookie)
 	conf.session.Lifespan = viper.GetDuration(keySessionLifespan)
+
+	// OAuth
+	conf.oauth.StateCookie = viper.GetString(keyOAuthStateCookie)
+	conf.oauth.CookieLifespan = viper.GetDuration(keyOAuthCookieLifespan)
+	conf.oauth.Google.ClientID = viper.GetString(keyOAuthGoogleClientID)
+	conf.oauth.Google.ClientSecret = viper.GetString(keyOAuthGoogleClientSecret)
+	conf.oauth.Google.RedirectURL = viper.GetString(keyOAuthGoogleRedirectURL)
+	conf.oauth.Google.Scopes = viper.GetStringSlice(keyOAuthGoogleScopes)
+	conf.oauth.GitHub.ClientID = viper.GetString(keyOAuthGitHubClientID)
+	conf.oauth.GitHub.ClientSecret = viper.GetString(keyOAuthGitHubClientSecret)
+	conf.oauth.GitHub.RedirectURL = viper.GetString(keyOAuthGitHubRedirectURL)
+	conf.oauth.GitHub.Scopes = viper.GetStringSlice(keyOAuthGitHubScopes)
+	conf.oauth.LinkedIn.ClientID = viper.GetString(keyOAuthLinkedInClientID)
+	conf.oauth.LinkedIn.ClientSecret = viper.GetString(keyOAuthLinkedInClientSecret)
+	conf.oauth.LinkedIn.RedirectURL = viper.GetString(keyOAuthLinkedInRedirectURL)
+	conf.oauth.LinkedIn.Scopes = viper.GetStringSlice(keyOAuthLinkedInScopes)
 
 	return conf
 }
@@ -105,10 +130,18 @@ func (c *Config) Mode() string {
 	return c.mode
 }
 
+func (c *Config) Domain() string {
+	return c.serve.Domain
+}
+
 func (c *Config) IsProd() bool {
 	return c.mode == "prod"
 }
 
 func (c *Config) Session() Session {
 	return c.session
+}
+
+func (c *Config) OAuth() OAuth {
+	return c.oauth
 }

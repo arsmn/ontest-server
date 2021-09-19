@@ -2,6 +2,7 @@ package settings
 
 const (
 	keyMode                          = "mode"
+	keyServeDomain                   = "serve.domain"
 	keyServeStartupMessageEnabled    = "serve.startup_message_enabled"
 	keyServePublicPort               = "serve.public.port"
 	keyServePublicHost               = "serve.public.host"
@@ -14,5 +15,18 @@ const (
 	keyHasherArgon2ConfigKeyLength   = "hashers.argon2.key_length"
 	keySessionCookie                 = "session.cookie"
 	keySessionLifespan               = "session.lifespan"
-	keySessionDomain                 = "session.domain"
+	keyOAuthStateCookie              = "oauth.state_cookie"
+	keyOAuthCookieLifespan           = "oauth.cookie_lifespan"
+	keyOAuthGoogleClientID           = "oauth.google.client_id"
+	keyOAuthGoogleClientSecret       = "oauth.google.client_secret"
+	keyOAuthGoogleRedirectURL        = "oauth.google.redirect_url"
+	keyOAuthGoogleScopes             = "oauth.google.scopes"
+	keyOAuthGitHubClientID           = "oauth.github.client_id"
+	keyOAuthGitHubClientSecret       = "oauth.github.client_secret"
+	keyOAuthGitHubRedirectURL        = "oauth.github.redirect_url"
+	keyOAuthGitHubScopes             = "oauth.github.scopes"
+	keyOAuthLinkedInClientID         = "oauth.linkedin.client_id"
+	keyOAuthLinkedInClientSecret     = "oauth.linkedin.client_secret"
+	keyOAuthLinkedInRedirectURL      = "oauth.linkedin.redirect_url"
+	keyOAuthLinkedInScopes           = "oauth.linkedin.scopes"
 )
