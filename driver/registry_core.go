@@ -42,6 +42,10 @@ func (r *RegistryCore) Init(ctx context.Context) error {
 	r.app = service.NewApp(r)
 	r.passwordHasher = hash.NewHasherArgon2(r)
 
+	r.googleOAuth = oauth.NewOAutherGoogle(r)
+	r.githubOAuth = oauth.NewOAutherGitHub(r)
+	r.linkedinOAuth = oauth.NewOAutherLinkedIn(r)
+
 	return nil
 }
 

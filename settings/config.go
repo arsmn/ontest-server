@@ -40,6 +40,9 @@ type (
 		GitHub         oauth2.Config
 		LinkedIn       oauth2.Config
 	}
+	Client struct {
+		WebURL string
+	}
 	Provider interface {
 		Settings() *Config
 	}
@@ -52,6 +55,7 @@ type (
 		argon2  Argon2
 		session Session
 		oauth   OAuth
+		client  Client
 	}
 )
 
@@ -62,7 +66,7 @@ func New(l *xlog.Logger) *Config {
 	conf.mode = viper.GetString(keyMode)
 
 	// Serve
-	conf.serve.Domain = viper.GetString(keyServeStartupMessageEnabled)
+	conf.serve.Domain = viper.GetString(keyServeDomain)
 	conf.serve.StartupMessage = viper.GetBool(keyServeStartupMessageEnabled)
 	conf.serve.Public.Port = viper.GetString(keyServePublicPort)
 	conf.serve.Public.Host = viper.GetString(keyServePublicHost)
@@ -97,6 +101,9 @@ func New(l *xlog.Logger) *Config {
 	conf.oauth.LinkedIn.ClientSecret = viper.GetString(keyOAuthLinkedInClientSecret)
 	conf.oauth.LinkedIn.RedirectURL = viper.GetString(keyOAuthLinkedInRedirectURL)
 	conf.oauth.LinkedIn.Scopes = viper.GetStringSlice(keyOAuthLinkedInScopes)
+
+	// Client
+	conf.client.WebURL = viper.GetString(keyClientWebURL)
 
 	return conf
 }
@@ -144,4 +151,8 @@ func (c *Config) Session() Session {
 
 func (c *Config) OAuth() OAuth {
 	return c.oauth
+}
+
+func (c *Config) Client() Client {
+	return c.client
 }

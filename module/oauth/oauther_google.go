@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/settings"
 	t "github.com/arsmn/ontest-server/transport"
 	"golang.org/x/oauth2"
@@ -16,6 +17,7 @@ import (
 type (
 	googleDependencies interface {
 		settings.Provider
+		xlog.Provider
 	}
 	Google struct {
 		dx     googleDependencies
@@ -58,6 +60,8 @@ func (g *Google) FetchData(_ context.Context, token string) (*t.OAuthSignRequest
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return nil, err
 	}
+
+	g.dx.Logger().Info("Google Response", xlog.String("email", data.Email))
 
 	return &t.OAuthSignRequest{
 		Email:     data.Email,

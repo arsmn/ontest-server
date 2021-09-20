@@ -29,4 +29,5 @@ const (
 	keyOAuthLinkedInClientSecret     = "oauth.linkedin.client_secret"
 	keyOAuthLinkedInRedirectURL      = "oauth.linkedin.redirect_url"
 	keyOAuthLinkedInScopes           = "oauth.linkedin.scopes"
+	keyClientWebURL                  = "client.web_url"
 )

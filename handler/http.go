@@ -6,6 +6,7 @@ import (
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/context"
 	"github.com/arsmn/ontest-server/module/oauth"
+	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/settings"
 	"github.com/rs/cors"
 
@@ -20,6 +21,7 @@ type (
 		app.Provider
 		settings.Provider
 		oauth.Provider
+		xlog.Provider
 	}
 	Handler struct {
 		dx      handlerDependencies

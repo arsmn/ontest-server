@@ -35,7 +35,7 @@ func (l *LinkedIn) Config() *oauth2.Config {
 	return &c
 }
 
-func (l *LinkedIn) GetData(ctx context.Context, token string) (*t.OAuthSignRequest, error) {
+func (l *LinkedIn) FetchData(ctx context.Context, token string) (*t.OAuthSignRequest, error) {
 	req, err := http.NewRequest(http.MethodGet, "https://api.linkedin.com/v2/me", nil)
 	if err != nil {
 		return nil, err

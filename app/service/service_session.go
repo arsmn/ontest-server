@@ -62,6 +62,10 @@ func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*sess
 		return nil, err
 	}
 
+	if user.Password == "" {
+		return nil, app.ErrInvalidCredentials
+	}
+
 	if err := s.dx.Hasher().Compare(ctx, []byte(req.Password), []byte(user.Password)); err != nil {
 		return nil, app.ErrInvalidCredentials
 	}
@@ -86,11 +90,13 @@ func (s *Service) OAuthIssueSession(ctx context.Context, req *t.OAuthSignRequest
 
 	if newuser {
 		u = &user.User{
-			ID:        generate.UID(),
-			Username:  generate.HFUID(),
-			Email:     req.Email,
-			FirstName: req.FirstName,
-			LastName:  req.LastName,
+			ID:            generate.UID(),
+			Username:      generate.HFUID(),
+			Email:         req.Email,
+			FirstName:     req.FirstName,
+			LastName:      req.LastName,
+			IsActive:      true,
+			EmailVerified: true,
 		}
 		if _, err := s.createUser(ctx, u); err != nil {
 			return nil, err
