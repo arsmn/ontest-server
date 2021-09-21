@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/settings"
-	t "github.com/arsmn/ontest-server/transport"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
@@ -35,7 +35,7 @@ func (g *GitHub) Config() *oauth2.Config {
 	return &c
 }
 
-func (g *GitHub) FetchData(_ context.Context, token string) (*t.OAuthSignRequest, error) {
+func (g *GitHub) FetchData(_ context.Context, token string) (*session.OAuthSignRequest, error) {
 	req, err := http.NewRequest(http.MethodGet, "https://api.github.com/user", nil)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (g *GitHub) FetchData(_ context.Context, token string) (*t.OAuthSignRequest
 		return nil, err
 	}
 
-	return &t.OAuthSignRequest{
+	return &session.OAuthSignRequest{
 		Email:     data.Email,
 		FirstName: data.Name,
 	}, nil

@@ -3,7 +3,7 @@ package oauth
 import (
 	"context"
 
-	t "github.com/arsmn/ontest-server/transport"
+	"github.com/arsmn/ontest-server/session"
 	"golang.org/x/oauth2"
 )
 
@@ -22,7 +22,7 @@ func (t OAuthProviderType) String() string {
 
 type OAuther interface {
 	Config() *oauth2.Config
-	FetchData(ctx context.Context, token string) (*t.OAuthSignRequest, error)
+	FetchData(ctx context.Context, token string) (*session.OAuthSignRequest, error)
 }
 
 type Provider interface {

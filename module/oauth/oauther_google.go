@@ -8,8 +8,8 @@ import (
 	"net/url"
 
 	"github.com/arsmn/ontest-server/module/xlog"
+	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/settings"
-	t "github.com/arsmn/ontest-server/transport"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -38,7 +38,7 @@ func (g *Google) Config() *oauth2.Config {
 	return &c
 }
 
-func (g *Google) FetchData(_ context.Context, token string) (*t.OAuthSignRequest, error) {
+func (g *Google) FetchData(_ context.Context, token string) (*session.OAuthSignRequest, error) {
 	resp, err := g.client.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token))
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (g *Google) FetchData(_ context.Context, token string) (*t.OAuthSignRequest
 		return nil, err
 	}
 
-	return &t.OAuthSignRequest{
+	return &session.OAuthSignRequest{
 		Email:     data.Email,
 		FirstName: data.GivenName,
 		LastName:  data.FamilyName,

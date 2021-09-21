@@ -11,7 +11,6 @@ import (
 	v "github.com/arsmn/ontest-server/module/validation"
 	"github.com/arsmn/ontest-server/persistence"
 	"github.com/arsmn/ontest-server/session"
-	t "github.com/arsmn/ontest-server/transport"
 	"github.com/arsmn/ontest-server/user"
 )
 
@@ -49,7 +48,7 @@ func (s *Service) createSession(ctx context.Context, userID uint64) (*session.Se
 	return sess, s.dx.Persister().CreateSession(ctx, sess)
 }
 
-func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*session.Session, error) {
+func (s *Service) IssueSession(ctx context.Context, req *session.SigninRequest) (*session.Session, error) {
 	if err := v.Validate(req); err != nil {
 		return nil, err
 	}
@@ -73,7 +72,7 @@ func (s *Service) IssueSession(ctx context.Context, req *t.SigninRequest) (*sess
 	return s.createSession(ctx, user.ID)
 }
 
-func (s *Service) OAuthIssueSession(ctx context.Context, req *t.OAuthSignRequest) (*session.Session, error) {
+func (s *Service) OAuthIssueSession(ctx context.Context, req *session.OAuthSignRequest) (*session.Session, error) {
 	if err := v.Validate(req); err != nil {
 		return nil, err
 	}

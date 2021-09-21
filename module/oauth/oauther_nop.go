@@ -3,7 +3,7 @@ package oauth
 import (
 	"context"
 
-	t "github.com/arsmn/ontest-server/transport"
+	"github.com/arsmn/ontest-server/session"
 	"golang.org/x/oauth2"
 )
 
@@ -17,6 +17,6 @@ func (n *Nop) Config() *oauth2.Config {
 	return nil
 }
 
-func (n *Nop) FetchData(_ context.Context, token string) (*t.OAuthSignRequest, error) {
+func (n *Nop) FetchData(_ context.Context, token string) (*session.OAuthSignRequest, error) {
 	return nil, nil
 }

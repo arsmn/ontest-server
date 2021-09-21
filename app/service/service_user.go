@@ -12,7 +12,6 @@ import (
 	"github.com/arsmn/ontest-server/module/generate"
 	v "github.com/arsmn/ontest-server/module/validation"
 	"github.com/arsmn/ontest-server/persistence"
-	t "github.com/arsmn/ontest-server/transport"
 	"github.com/arsmn/ontest-server/user"
 )
 
@@ -26,7 +25,7 @@ func (s *Service) createUser(ctx context.Context, user *user.User) (*user.User, 
 	return user, s.dx.Persister().CreateUser(ctx, user)
 }
 
-func (s *Service) RegisterUser(ctx context.Context, req *t.SignupRequest) (*user.User, error) {
+func (s *Service) RegisterUser(ctx context.Context, req *user.SignupRequest) (*user.User, error) {
 	if err := v.Validate(req); err != nil {
 		return nil, err
 	}
@@ -48,7 +47,7 @@ func (s *Service) RegisterUser(ctx context.Context, req *t.SignupRequest) (*user
 	return s.createUser(ctx, u)
 }
 
-func (s *Service) ForgotPassword(ctx context.Context, req *t.ForgotPasswordRequest) error {
+func (s *Service) ForgotPassword(ctx context.Context, req *user.ForgotPasswordRequest) error {
 	if err := v.Validate(req); err != nil {
 		return err
 	}
@@ -75,7 +74,7 @@ func (s *Service) ForgotPassword(ctx context.Context, req *t.ForgotPasswordReque
 	return nil
 }
 
-func (s *Service) ResetPassword(ctx context.Context, req *t.ResetPasswordRequest) error {
+func (s *Service) ResetPassword(ctx context.Context, req *user.ResetPasswordRequest) error {
 	if err := v.Validate(req); err != nil {
 		return err
 	}
@@ -107,4 +106,12 @@ func (s *Service) ResetPassword(ctx context.Context, req *t.ResetPasswordRequest
 	}
 
 	return s.dx.Cacher().Delete(ctx, key)
+}
+
+func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRequest) error {
+	if err := v.Validate(req); err != nil {
+		return err
+	}
+
+	return nil
 }

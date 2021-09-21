@@ -2,8 +2,6 @@ package user
 
 import (
 	"context"
-
-	t "github.com/arsmn/ontest-server/transport"
 )
 
 type ServiceProvider interface {
@@ -12,7 +10,8 @@ type ServiceProvider interface {
 
 type Service interface {
 	GetUser(context.Context, uint64) (*User, error)
-	RegisterUser(context.Context, *t.SignupRequest) (*User, error)
-	ForgotPassword(context.Context, *t.ForgotPasswordRequest) error
-	ResetPassword(context.Context, *t.ResetPasswordRequest) error
+	RegisterUser(context.Context, *SignupRequest) (*User, error)
+	ForgotPassword(context.Context, *ForgotPasswordRequest) error
+	ResetPassword(context.Context, *ResetPasswordRequest) error
+	ChangePassword(context.Context, *ChangePasswordRequest) error
 }

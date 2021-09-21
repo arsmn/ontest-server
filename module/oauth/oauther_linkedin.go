@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/settings"
-	t "github.com/arsmn/ontest-server/transport"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/linkedin"
 )
@@ -35,7 +35,7 @@ func (l *LinkedIn) Config() *oauth2.Config {
 	return &c
 }
 
-func (l *LinkedIn) FetchData(ctx context.Context, token string) (*t.OAuthSignRequest, error) {
+func (l *LinkedIn) FetchData(ctx context.Context, token string) (*session.OAuthSignRequest, error) {
 	req, err := http.NewRequest(http.MethodGet, "https://api.linkedin.com/v2/me", nil)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (l *LinkedIn) FetchData(ctx context.Context, token string) (*t.OAuthSignReq
 		return nil, err
 	}
 
-	return &t.OAuthSignRequest{
+	return &session.OAuthSignRequest{
 		FirstName: data.FirstName,
 		LastName:  data.LastName,
 		Email:     email,

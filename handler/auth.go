@@ -1,7 +1,8 @@
 package handler
 
 import (
-	t "github.com/arsmn/ontest-server/transport"
+	"github.com/arsmn/ontest-server/session"
+	"github.com/arsmn/ontest-server/user"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -15,7 +16,7 @@ func (h *Handler) authRouter(r chi.Router) {
 }
 
 func (h *Handler) signin(ctx *Context) error {
-	req := new(t.SigninRequest)
+	req := new(session.SigninRequest)
 	if err := ctx.BindJson(req); err != nil {
 		return err
 	}
@@ -32,7 +33,7 @@ func (h *Handler) signin(ctx *Context) error {
 }
 
 func (h *Handler) signup(ctx *Context) error {
-	req := new(t.SignupRequest)
+	req := new(user.SignupRequest)
 	if err := ctx.BindJson(req); err != nil {
 		return err
 	}
@@ -67,7 +68,7 @@ func (h *Handler) whoami(ctx *Context) error {
 }
 
 func (h *Handler) forgotPassword(ctx *Context) error {
-	req := new(t.ForgotPasswordRequest)
+	req := new(user.ForgotPasswordRequest)
 	if err := ctx.BindJson(req); err != nil {
 		return err
 	}
@@ -81,7 +82,7 @@ func (h *Handler) forgotPassword(ctx *Context) error {
 }
 
 func (h *Handler) resettPassword(ctx *Context) error {
-	req := new(t.ResetPasswordRequest)
+	req := new(user.ResetPasswordRequest)
 	if err := ctx.BindJson(req); err != nil {
 		return err
 	}
