@@ -30,4 +30,8 @@ const (
 	keyOAuthLinkedInRedirectURL      = "oauth.linkedin.redirect_url"
 	keyOAuthLinkedInScopes           = "oauth.linkedin.scopes"
 	keyClientWebURL                  = "client.web_url"
+	keyMailSMTPFrom                  = "mail.smtp.from"
+	keyMailSMTPPassword              = "mail.smtp.password"
+	keyMailSMTPHost                  = "mail.smtp.host"
+	keyMailSMTPPort                  = "mail.smtp.port"
 )

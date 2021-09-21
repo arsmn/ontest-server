@@ -25,8 +25,8 @@ func (h *Handler) signin(ctx *Context) error {
 		return err
 	}
 
-	s := h.dx.Settings().Session()
-	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()), "/", h.dx.Settings().Domain())
+	s := h.dx.Settings().Session
+	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()), "/", h.dx.Settings().Serve.Domain)
 
 	return ctx.OK(success)
 }
@@ -46,7 +46,7 @@ func (h *Handler) signup(ctx *Context) error {
 }
 
 func (h *Handler) signout(ctx *Context) error {
-	c := h.dx.Settings().Session().Cookie
+	c := h.dx.Settings().Session.Cookie
 	token, err := ctx.Cookie(c)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func (h *Handler) signout(ctx *Context) error {
 		return err
 	}
 
-	ctx.RemoveCookie(h.dx.Settings().Session().Cookie)
+	ctx.RemoveCookie(h.dx.Settings().Session.Cookie)
 	return ctx.OK(success)
 }
 

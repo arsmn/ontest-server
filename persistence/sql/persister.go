@@ -43,14 +43,14 @@ func NewPersister(dx persisterDependencies) (*Persister, error) {
 
 	return p, backoff.Retry(
 		func() error {
-			maxOpenConns, maxIdleConns, connMaxLifetime, cleanedDSN := sqlcon.ParseConnectionOptions(dx.Logger(), dx.Settings().SQL().DSN)
+			maxOpenConns, maxIdleConns, connMaxLifetime, cleanedDSN := sqlcon.ParseConnectionOptions(dx.Logger(), dx.Settings().SQL.DSN)
 			dx.Logger().
 				Debug("Connecting to SQL Database",
 					xlog.Int("maxOpenConns", maxOpenConns),
 					xlog.Int("maxIdleConns", maxIdleConns),
 					xlog.Duration("connMaxLifetime", connMaxLifetime))
 
-			engine, err := xorm.NewEngine(dx.Settings().SQL().Driver, sqlcon.FinalizeDSN(dx.Logger(), cleanedDSN))
+			engine, err := xorm.NewEngine(dx.Settings().SQL.Driver, sqlcon.FinalizeDSN(dx.Logger(), cleanedDSN))
 			if err != nil {
 				dx.Logger().Warn("Unable to connect to database, retrying.", xlog.Err(err))
 				return err

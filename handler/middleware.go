@@ -9,7 +9,7 @@ import (
 
 func (h *Handler) withUser(fn HandleFunc) HandleFunc {
 	return func(ctx *Context) error {
-		s := h.dx.Settings().Session()
+		s := h.dx.Settings().Session
 		c, err := ctx.Cookie(s.Cookie)
 		if err != nil {
 			ctx.RemoveCookie(s.Cookie)

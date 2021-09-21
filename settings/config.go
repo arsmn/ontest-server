@@ -10,52 +10,53 @@ import (
 )
 
 type (
-	Serve struct {
-		Domain         string
-		StartupMessage bool
-		Public         struct {
-			Port string
-			Host string
-		}
-	}
-	SQL struct {
-		DSN    string
-		Driver string
-	}
-	Argon2 struct {
-		Memory      uint32
-		Iterations  uint32
-		Parallelism uint8
-		SaltLength  uint32
-		KeyLength   uint32
-	}
-	Session struct {
-		Cookie   string
-		Lifespan time.Duration
-	}
-	OAuth struct {
-		StateCookie    string
-		CookieLifespan time.Duration
-		Google         oauth2.Config
-		GitHub         oauth2.Config
-		LinkedIn       oauth2.Config
-	}
-	Client struct {
-		WebURL string
-	}
 	Provider interface {
 		Settings() *Config
 	}
 	Config struct {
 		l *xlog.Logger
 
-		mode    string
-		serve   Serve
-		sql     SQL
-		argon2  Argon2
-		session Session
-		oauth   OAuth
-		client  Client
+		Mode  string
+		Serve struct {
+			Domain         string
+			StartupMessage bool
+			Public         struct {
+				Port string
+				Host string
+			}
+		}
+		SQL struct {
+			DSN    string
+			Driver string
+		}
+		Argon2 struct {
+			Memory      uint32
+			Iterations  uint32
+			Parallelism uint8
+			SaltLength  uint32
+			KeyLength   uint32
+		}
+		Session struct {
+			Cookie   string
+			Lifespan time.Duration
+		}
+		OAuth struct {
+			StateCookie    string
+			CookieLifespan time.Duration
+			Google         oauth2.Config
+			GitHub         oauth2.Config
+			LinkedIn       oauth2.Config
+		}
+		Client struct {
+			WebURL string
+		}
+		Mail struct {
+			SMTP struct {
+				From       string
+				Password   string
+				Host, Port string
+			}
+		}
 	}
 )
 
@@ -63,53 +64,55 @@ func New(l *xlog.Logger) *Config {
 	conf := new(Config)
 
 	// Mode
-	conf.mode = viper.GetString(keyMode)
+	conf.Mode = viper.GetString(keyMode)
 
 	// Serve
-	conf.serve.Domain = viper.GetString(keyServeDomain)
-	conf.serve.StartupMessage = viper.GetBool(keyServeStartupMessageEnabled)
-	conf.serve.Public.Port = viper.GetString(keyServePublicPort)
-	conf.serve.Public.Host = viper.GetString(keyServePublicHost)
+	conf.Serve.Domain = viper.GetString(keyServeDomain)
+	conf.Serve.StartupMessage = viper.GetBool(keyServeStartupMessageEnabled)
+	conf.Serve.Public.Port = viper.GetString(keyServePublicPort)
+	conf.Serve.Public.Host = viper.GetString(keyServePublicHost)
 
 	// SQL
-	conf.sql.DSN = viper.GetString(keySQLDSN)
-	conf.sql.Driver = viper.GetString(keySQLDriver)
+	conf.SQL.DSN = viper.GetString(keySQLDSN)
+	conf.SQL.Driver = viper.GetString(keySQLDriver)
 
 	// Argon2
-	conf.argon2.Memory = viper.GetUint32(keyHasherArgon2ConfigMemory)
-	conf.argon2.Iterations = viper.GetUint32(keyHasherArgon2ConfigIterations)
-	conf.argon2.Parallelism = uint8(viper.GetUint(keyHasherArgon2ConfigParallelism))
-	conf.argon2.SaltLength = viper.GetUint32(keyHasherArgon2ConfigSaltLength)
-	conf.argon2.KeyLength = viper.GetUint32(keyHasherArgon2ConfigKeyLength)
+	conf.Argon2.Memory = viper.GetUint32(keyHasherArgon2ConfigMemory)
+	conf.Argon2.Iterations = viper.GetUint32(keyHasherArgon2ConfigIterations)
+	conf.Argon2.Parallelism = uint8(viper.GetUint(keyHasherArgon2ConfigParallelism))
+	conf.Argon2.SaltLength = viper.GetUint32(keyHasherArgon2ConfigSaltLength)
+	conf.Argon2.KeyLength = viper.GetUint32(keyHasherArgon2ConfigKeyLength)
 
 	// Session
-	conf.session.Cookie = viper.GetString(keySessionCookie)
-	conf.session.Lifespan = viper.GetDuration(keySessionLifespan)
+	conf.Session.Cookie = viper.GetString(keySessionCookie)
+	conf.Session.Lifespan = viper.GetDuration(keySessionLifespan)
 
 	// OAuth
-	conf.oauth.StateCookie = viper.GetString(keyOAuthStateCookie)
-	conf.oauth.CookieLifespan = viper.GetDuration(keyOAuthCookieLifespan)
-	conf.oauth.Google.ClientID = viper.GetString(keyOAuthGoogleClientID)
-	conf.oauth.Google.ClientSecret = viper.GetString(keyOAuthGoogleClientSecret)
-	conf.oauth.Google.RedirectURL = viper.GetString(keyOAuthGoogleRedirectURL)
-	conf.oauth.Google.Scopes = viper.GetStringSlice(keyOAuthGoogleScopes)
-	conf.oauth.GitHub.ClientID = viper.GetString(keyOAuthGitHubClientID)
-	conf.oauth.GitHub.ClientSecret = viper.GetString(keyOAuthGitHubClientSecret)
-	conf.oauth.GitHub.RedirectURL = viper.GetString(keyOAuthGitHubRedirectURL)
-	conf.oauth.GitHub.Scopes = viper.GetStringSlice(keyOAuthGitHubScopes)
-	conf.oauth.LinkedIn.ClientID = viper.GetString(keyOAuthLinkedInClientID)
-	conf.oauth.LinkedIn.ClientSecret = viper.GetString(keyOAuthLinkedInClientSecret)
-	conf.oauth.LinkedIn.RedirectURL = viper.GetString(keyOAuthLinkedInRedirectURL)
-	conf.oauth.LinkedIn.Scopes = viper.GetStringSlice(keyOAuthLinkedInScopes)
+	conf.OAuth.StateCookie = viper.GetString(keyOAuthStateCookie)
+	conf.OAuth.CookieLifespan = viper.GetDuration(keyOAuthCookieLifespan)
+	conf.OAuth.Google.ClientID = viper.GetString(keyOAuthGoogleClientID)
+	conf.OAuth.Google.ClientSecret = viper.GetString(keyOAuthGoogleClientSecret)
+	conf.OAuth.Google.RedirectURL = viper.GetString(keyOAuthGoogleRedirectURL)
+	conf.OAuth.Google.Scopes = viper.GetStringSlice(keyOAuthGoogleScopes)
+	conf.OAuth.GitHub.ClientID = viper.GetString(keyOAuthGitHubClientID)
+	conf.OAuth.GitHub.ClientSecret = viper.GetString(keyOAuthGitHubClientSecret)
+	conf.OAuth.GitHub.RedirectURL = viper.GetString(keyOAuthGitHubRedirectURL)
+	conf.OAuth.GitHub.Scopes = viper.GetStringSlice(keyOAuthGitHubScopes)
+	conf.OAuth.LinkedIn.ClientID = viper.GetString(keyOAuthLinkedInClientID)
+	conf.OAuth.LinkedIn.ClientSecret = viper.GetString(keyOAuthLinkedInClientSecret)
+	conf.OAuth.LinkedIn.RedirectURL = viper.GetString(keyOAuthLinkedInRedirectURL)
+	conf.OAuth.LinkedIn.Scopes = viper.GetStringSlice(keyOAuthLinkedInScopes)
 
 	// Client
-	conf.client.WebURL = viper.GetString(keyClientWebURL)
+	conf.Client.WebURL = viper.GetString(keyClientWebURL)
+
+	// Mail
+	conf.Mail.SMTP.From = viper.GetString(keyMailSMTPFrom)
+	conf.Mail.SMTP.Password = viper.GetString(keyMailSMTPPassword)
+	conf.Mail.SMTP.Host = viper.GetString(keyMailSMTPHost)
+	conf.Mail.SMTP.Port = viper.GetString(keyMailSMTPPort)
 
 	return conf
-}
-
-func (c *Config) StartupMessageEnabled() bool {
-	return c.serve.StartupMessage
 }
 
 func (c *Config) PublicListenOn() string {
@@ -125,34 +128,6 @@ func (c *Config) listenOn(key string) string {
 	return fmt.Sprintf("%s:%d", viper.GetString("serve."+key+".host"), port)
 }
 
-func (c *Config) HasherArgon2() Argon2 {
-	return c.argon2
-}
-
-func (c *Config) SQL() SQL {
-	return c.sql
-}
-
-func (c *Config) Mode() string {
-	return c.mode
-}
-
-func (c *Config) Domain() string {
-	return c.serve.Domain
-}
-
 func (c *Config) IsProd() bool {
-	return c.mode == "prod"
-}
-
-func (c *Config) Session() Session {
-	return c.session
-}
-
-func (c *Config) OAuth() OAuth {
-	return c.oauth
-}
-
-func (c *Config) Client() Client {
-	return c.client
+	return c.Mode == "prod"
 }

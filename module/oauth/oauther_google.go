@@ -33,7 +33,7 @@ func NewOAutherGoogle(dx googleDependencies) *Google {
 }
 
 func (g *Google) Config() *oauth2.Config {
-	c := g.dx.Settings().OAuth().Google
+	c := g.dx.Settings().OAuth.Google
 	c.Endpoint = google.Endpoint
 	return &c
 }

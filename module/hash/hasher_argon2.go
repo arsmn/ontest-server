@@ -22,6 +22,13 @@ var (
 )
 
 type (
+	options struct {
+		Memory      uint32
+		Iterations  uint32
+		Parallelism uint8
+		SaltLength  uint32
+		KeyLength   uint32
+	}
 	argon2Dependencies interface {
 		settings.Provider
 	}
@@ -35,7 +42,7 @@ func NewHasherArgon2(dx argon2Dependencies) *Argon2 {
 }
 
 func (h *Argon2) Generate(ctx context.Context, password []byte) ([]byte, error) {
-	p := h.dx.Settings().HasherArgon2()
+	p := h.dx.Settings().Argon2
 
 	salt := make([]byte, p.SaltLength)
 	if _, err := rand.Read(salt); err != nil {
@@ -73,7 +80,7 @@ func (h *Argon2) Compare(ctx context.Context, password []byte, hash []byte) erro
 	return ErrMismatchedHashAndPassword
 }
 
-func decodeHash(encodedHash string) (p *settings.Argon2, salt, hash []byte, err error) {
+func decodeHash(encodedHash string) (p *options, salt, hash []byte, err error) {
 	parts := strings.Split(encodedHash, "$")
 	if len(parts) != 6 {
 		return nil, nil, nil, ErrInvalidHash
@@ -88,7 +95,7 @@ func decodeHash(encodedHash string) (p *settings.Argon2, salt, hash []byte, err 
 		return nil, nil, nil, ErrIncompatibleVersion
 	}
 
-	p = new(settings.Argon2)
+	p = new(options)
 	_, err = fmt.Sscanf(parts[3], "m=%d,t=%d,p=%d", &p.Memory, &p.Iterations, &p.Parallelism)
 	if err != nil {
 		return nil, nil, nil, err

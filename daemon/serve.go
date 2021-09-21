@@ -26,15 +26,15 @@ func ServePublic(ctx context.Context, r driver.Registry, wg *sync.WaitGroup, arg
 		Handler: handler,
 	})
 
-	if s.StartupMessageEnabled() {
+	if s.Serve.StartupMessage {
 		startupMessage(startupConfig{
 			addr:           server.Addr,
 			tls:            false,
 			handlersCount:  h.HandlersCount(),
 			templatesCount: h.TemplatesCount(),
 			cfgFile:        settings.ConfigFileUsed(),
-			mode:           r.Settings().Mode(),
-			database:       r.Settings().SQL().Driver,
+			mode:           r.Settings().Mode,
+			database:       r.Settings().SQL.Driver,
 		})
 	} else {
 		l.Info(fmt.Sprintf("Starting the public httpd on: %s", server.Addr))

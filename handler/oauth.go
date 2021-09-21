@@ -32,9 +32,11 @@ func (h *Handler) linkedin(ctx *Context) error {
 }
 
 func (h *Handler) handleOAuth(ctx *Context, cfg *oauth2.Config) error {
-	s := h.dx.Settings().OAuth()
+	s := h.dx.Settings().OAuth
 	state := generate.RandomString(16, generate.AlphaNum)
-	ctx.SetCookie(s.StateCookie, state, int(s.CookieLifespan.Seconds()), "/", h.dx.Settings().Domain(), true, true, http.SameSiteDefaultMode)
+	ctx.SetCookie(s.StateCookie,
+		state, int(s.CookieLifespan.Seconds()), "/", h.dx.Settings().Serve.Domain,
+		true, true, http.SameSiteDefaultMode)
 	url := cfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	return ctx.TemporaryRedirect(url)
 }
@@ -54,8 +56,8 @@ func (h *Handler) linkedinCallback(ctx *Context) error {
 func (h *Handler) handleCallback(ctx *Context, cfg oauth.OAuther) error {
 	sett := h.dx.Settings()
 
-	state, err := ctx.Cookie(sett.OAuth().StateCookie)
-	ctx.RemoveCookie(sett.OAuth().StateCookie)
+	state, err := ctx.Cookie(sett.OAuth.StateCookie)
+	ctx.RemoveCookie(sett.OAuth.StateCookie)
 
 	if ctx.Request().FormValue("state") != state || err != nil {
 		h.dx.Logger().Error("invalid state", xlog.String("state", state))
@@ -79,7 +81,7 @@ func (h *Handler) handleCallback(ctx *Context, cfg oauth.OAuther) error {
 		return err
 	}
 
-	ctx.SetSecureCookie(sett.Session().Cookie, sess.Token, int(sett.Session().Lifespan.Seconds()), "/", sett.Domain())
+	ctx.SetSecureCookie(sett.Session.Cookie, sess.Token, int(sett.Session.Lifespan.Seconds()), "/", sett.Serve.Domain)
 
-	return ctx.TemporaryRedirect(sett.Client().WebURL)
+	return ctx.TemporaryRedirect(sett.Client.WebURL)
 }

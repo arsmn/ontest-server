@@ -30,7 +30,7 @@ func NewOAutherGitHub(dx githubDependencies) *GitHub {
 }
 
 func (g *GitHub) Config() *oauth2.Config {
-	c := g.dx.Settings().OAuth().GitHub
+	c := g.dx.Settings().OAuth.GitHub
 	c.Endpoint = github.Endpoint
 	return &c
 }

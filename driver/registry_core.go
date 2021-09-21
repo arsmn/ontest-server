@@ -8,6 +8,7 @@ import (
 	"github.com/arsmn/ontest-server/app/service"
 	"github.com/arsmn/ontest-server/module/cache"
 	"github.com/arsmn/ontest-server/module/hash"
+	"github.com/arsmn/ontest-server/module/mail"
 	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/persistence"
@@ -24,6 +25,7 @@ type RegistryCore struct {
 	persister      persistence.Persister
 	cacher         cache.Cacher
 	passwordHasher hash.Hasher
+	mailer         mail.Mailer
 
 	googleOAuth   oauth.OAuther
 	githubOAuth   oauth.OAuther
@@ -34,13 +36,17 @@ func NewRegistryCore() *RegistryCore {
 	return &RegistryCore{}
 }
 
-func (r *RegistryCore) Init(ctx context.Context) error {
-	p, err := sql.NewPersister(r)
+func (r *RegistryCore) Init(ctx context.Context) (err error) {
+	r.persister, err = sql.NewPersister(r)
 	if err != nil {
 		return err
 	}
 
-	r.persister = p
+	r.mailer, err = mail.NewMailerSMTP(r)
+	if err != nil {
+		return err
+	}
+
 	r.app = service.NewApp(r)
 	r.cacher = cache.NewCacherRedis(r)
 	r.passwordHasher = hash.NewHasherArgon2(r)
@@ -84,6 +90,10 @@ func (r *RegistryCore) Cacher() cache.Cacher {
 
 func (r *RegistryCore) Hasher() hash.Hasher {
 	return r.passwordHasher
+}
+
+func (r *RegistryCore) Mailer() mail.Mailer {
+	return r.mailer
 }
 
 func (r *RegistryCore) OAuther(typ oauth.OAuthProviderType) oauth.OAuther {

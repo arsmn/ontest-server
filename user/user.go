@@ -21,6 +21,10 @@ type User struct {
 	DeletedAt time.Time `xorm:"deleted" json:"-"`
 }
 
+func (u *User) FullName() string {
+	return u.FirstName + " " + u.LastName
+}
+
 var defaultSanitizeFields = []string{
 	"Password",
 	"EmailVerified",

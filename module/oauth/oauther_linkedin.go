@@ -30,7 +30,7 @@ func NewOAutherLinkedIn(dx linkedinDependencies) *LinkedIn {
 }
 
 func (l *LinkedIn) Config() *oauth2.Config {
-	c := l.dx.Settings().OAuth().LinkedIn
+	c := l.dx.Settings().OAuth.LinkedIn
 	c.Endpoint = linkedin.Endpoint
 	return &c
 }

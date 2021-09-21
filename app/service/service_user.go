@@ -70,7 +70,7 @@ func (s *Service) ForgotPassword(ctx context.Context, req *t.ForgotPasswordReque
 		return err
 	}
 
-	// send code
+	s.dx.Mailer().SendResetPassword(ctx, u, code)
 
 	return nil
 }

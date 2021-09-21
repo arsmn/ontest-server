@@ -44,7 +44,7 @@ func (s *Service) createSession(ctx context.Context, userID uint64) (*session.Se
 		Token:     generate.RandomString(35, generate.AlphaNum),
 		Active:    true,
 		IssuedAt:  time.Now().UTC(),
-		ExpiresAt: time.Now().UTC().Add(s.dx.Settings().Session().Lifespan),
+		ExpiresAt: time.Now().UTC().Add(s.dx.Settings().Session.Lifespan),
 	}
 	return sess, s.dx.Persister().CreateSession(ctx, sess)
 }
