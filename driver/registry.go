@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/arsmn/ontest-server/app"
+	"github.com/arsmn/ontest-server/module/cache"
 	"github.com/arsmn/ontest-server/module/hash"
 	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/module/xlog"
@@ -22,4 +23,5 @@ type Registry interface {
 	persistence.Provider
 	hash.Provider
 	oauth.Provider
+	cache.Provider
 }

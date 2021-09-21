@@ -40,3 +40,23 @@ func RandomString(l int, allowedRunes []rune) string {
 	}
 	return string(seq)
 }
+
+func ResetPasswordCode(email string) string {
+	return RandomString(30, AlphaNum) + EncodeMD5(email)
+}
+
+func VerifyResetPasswordCode(code, email string) bool {
+	if len(code) <= 30 {
+		return false
+	}
+
+	if EncodeMD5(email) != code[30:] {
+		return false
+	}
+
+	return true
+}
+
+func UserRandCode() string {
+	return RandomString(10, AlphaNum)
+}

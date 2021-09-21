@@ -48,3 +48,25 @@ func (r OAuthSignRequest) Validate() error {
 		v.Field(&r.Email, v.Required, is.Email),
 	)
 }
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email,omitempty"`
+}
+
+func (r ForgotPasswordRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Email, v.Required, is.Email),
+	)
+}
+
+type ResetPasswordRequest struct {
+	Code     string `json:"code,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
+func (r ResetPasswordRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Code, v.Required),
+		v.Field(&r.Password, v.Required, v.Length(5, 50)),
+	)
+}

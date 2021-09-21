@@ -3,6 +3,7 @@ package errors
 import (
 	stderr "errors"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -130,6 +131,7 @@ func ToError(err error, id string) *Error {
 	}
 
 	if de.StatusCode() == http.StatusInternalServerError {
+		log.Println(de.ErrorField)
 		de.ErrorField = "an error occured"
 	}
 

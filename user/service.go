@@ -13,4 +13,6 @@ type ServiceProvider interface {
 type Service interface {
 	GetUser(context.Context, uint64) (*User, error)
 	RegisterUser(context.Context, *t.SignupRequest) (*User, error)
+	ForgotPassword(context.Context, *t.ForgotPasswordRequest) error
+	ResetPassword(context.Context, *t.ResetPasswordRequest) error
 }

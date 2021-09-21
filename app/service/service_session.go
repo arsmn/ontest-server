@@ -97,6 +97,7 @@ func (s *Service) OAuthIssueSession(ctx context.Context, req *t.OAuthSignRequest
 			LastName:      req.LastName,
 			IsActive:      true,
 			EmailVerified: true,
+			Rands:         generate.UserRandCode(),
 		}
 		if _, err := s.createUser(ctx, u); err != nil {
 			return nil, err

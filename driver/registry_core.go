@@ -6,6 +6,7 @@ import (
 
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/app/service"
+	"github.com/arsmn/ontest-server/module/cache"
 	"github.com/arsmn/ontest-server/module/hash"
 	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/module/xlog"
@@ -21,6 +22,7 @@ type RegistryCore struct {
 
 	app            app.App
 	persister      persistence.Persister
+	cacher         cache.Cacher
 	passwordHasher hash.Hasher
 
 	googleOAuth   oauth.OAuther
@@ -40,6 +42,7 @@ func (r *RegistryCore) Init(ctx context.Context) error {
 
 	r.persister = p
 	r.app = service.NewApp(r)
+	r.cacher = cache.NewCacherRedis(r)
 	r.passwordHasher = hash.NewHasherArgon2(r)
 
 	r.googleOAuth = oauth.NewOAutherGoogle(r)
@@ -73,6 +76,10 @@ func (r *RegistryCore) App() app.App {
 
 func (r *RegistryCore) Persister() persistence.Persister {
 	return r.persister
+}
+
+func (r *RegistryCore) Cacher() cache.Cacher {
+	return r.cacher
 }
 
 func (r *RegistryCore) Hasher() hash.Hasher {

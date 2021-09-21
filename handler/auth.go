@@ -10,6 +10,8 @@ func (h *Handler) authRouter(r chi.Router) {
 	r.Post("/signup", h.clown(h.signup))
 	r.Post("/signout", h.clown(h.withUser(h.signout)))
 	r.Get("/whoami", h.clown(h.withUser(h.whoami)))
+	r.Post("/forgot-password", h.clown(h.forgotPassword))
+	r.Post("/reset-password", h.clown(h.resettPassword))
 }
 
 func (h *Handler) signin(ctx *Context) error {
@@ -60,6 +62,34 @@ func (h *Handler) signout(ctx *Context) error {
 }
 
 func (h *Handler) whoami(ctx *Context) error {
-	u := ctx.User().CopySanitize("Password")
+	u := ctx.User().CopySanitize()
 	return ctx.OK(payload(u))
+}
+
+func (h *Handler) forgotPassword(ctx *Context) error {
+	req := new(t.ForgotPasswordRequest)
+	if err := ctx.BindJson(req); err != nil {
+		return err
+	}
+
+	err := h.dx.App().ForgotPassword(ctx.Request().Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(success)
+}
+
+func (h *Handler) resettPassword(ctx *Context) error {
+	req := new(t.ResetPasswordRequest)
+	if err := ctx.BindJson(req); err != nil {
+		return err
+	}
+
+	err := h.dx.App().ResetPassword(ctx.Request().Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(success)
 }

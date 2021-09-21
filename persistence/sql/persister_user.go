@@ -33,3 +33,8 @@ func (p *Persister) CreateUser(_ context.Context, u *user.User) error {
 	_, err := p.engine.InsertOne(u)
 	return handleError(err)
 }
+
+func (p *Persister) UpdateUser(_ context.Context, u *user.User, fields ...string) error {
+	_, err := p.engine.ID(u.ID).Cols(fields...).Update(u)
+	return err
+}

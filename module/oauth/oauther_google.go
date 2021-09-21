@@ -61,8 +61,6 @@ func (g *Google) FetchData(_ context.Context, token string) (*t.OAuthSignRequest
 		return nil, err
 	}
 
-	g.dx.Logger().Info("Google Response", xlog.String("email", data.Email))
-
 	return &t.OAuthSignRequest{
 		Email:     data.Email,
 		FirstName: data.GivenName,
