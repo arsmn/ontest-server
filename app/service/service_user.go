@@ -224,7 +224,7 @@ func (s *Service) Verify(ctx context.Context, req *user.VerificationRequest) err
 	}
 
 	var uid uint64
-	key := fmt.Sprintf("rpc_%s", req.Code)
+	key := fmt.Sprintf("vc_%s", req.Code)
 	if err := s.dx.Cacher().Get(ctx, key, &uid); err != nil {
 		return err
 	}

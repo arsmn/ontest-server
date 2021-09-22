@@ -26,6 +26,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	xorm.io/xorm v1.2.4
+	xorm.io/builder v0.3.9
 )
 
 require (
@@ -73,5 +74,4 @@ require (
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	xorm.io/builder v0.3.9 // indirect
 )
