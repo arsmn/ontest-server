@@ -11,4 +11,5 @@ type Persister interface {
 	FindSessionByToken(context.Context, string) (*Session, error)
 	CreateSession(context.Context, *Session) error
 	RemoveSession(context.Context, uint64) error
+	RemoveUserSessions(context.Context, uint64, ...string) error
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/arsmn/ontest-server/persistence"
 	"github.com/arsmn/ontest-server/session"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -36,5 +37,10 @@ func (p *Persister) CreateSession(_ context.Context, s *session.Session) error {
 
 func (p *Persister) RemoveSession(_ context.Context, id uint64) error {
 	_, err := p.engine.ID(id).Delete(new(session.Session))
+	return err
+}
+
+func (p *Persister) RemoveUserSessions(_ context.Context, uid uint64, tokens ...string) error {
+	_, err := p.engine.Where("user_id = ?", uid).And(builder.NotIn("token", tokens)).Delete(new(session.Session))
 	return err
 }

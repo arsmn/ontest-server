@@ -37,7 +37,7 @@ func (h *Handler) withUser(fn HandleFunc) HandleFunc {
 			return err
 		}
 
-		ctx.WithUser(u)
+		ctx.WithUser(u).WithSession(sess)
 
 		return fn(ctx)
 	}

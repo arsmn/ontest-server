@@ -20,13 +20,18 @@ func (h *Handler) signin(ctx *Context) error {
 		return err
 	}
 
-	res, err := h.dx.App().IssueSession(ctx.Request().Context(), req)
+	res, err := h.dx.App().IssueSession(ctx.Context(), req)
 	if err != nil {
 		return err
 	}
 
+	age := 0
 	s := h.dx.Settings().Session
-	ctx.SetSecureCookie(s.Cookie, res.Token, int(s.Lifespan.Seconds()), "/", h.dx.Settings().Serve.Domain)
+	if req.Remember {
+		age = int(s.Lifespan.Seconds())
+	}
+
+	ctx.SetSecureCookie(s.Cookie, res.Token, age, "/", h.dx.Settings().Serve.Domain)
 
 	return ctx.OK(success)
 }
@@ -37,7 +42,7 @@ func (h *Handler) signup(ctx *Context) error {
 		return err
 	}
 
-	_, err := h.dx.App().RegisterUser(ctx.Request().Context(), req)
+	_, err := h.dx.App().RegisterUser(ctx.Context(), req)
 	if err != nil {
 		return err
 	}
@@ -52,7 +57,7 @@ func (h *Handler) signout(ctx *Context) error {
 		return err
 	}
 
-	err = h.dx.App().DeleteSession(ctx.Request().Context(), token)
+	err = h.dx.App().DeleteSession(ctx.Context(), token)
 	if err != nil {
 		return err
 	}
@@ -67,7 +72,7 @@ func (h *Handler) sendResetPassword(ctx *Context) error {
 		return err
 	}
 
-	err := h.dx.App().SendResetPassword(ctx.Request().Context(), req)
+	err := h.dx.App().SendResetPassword(ctx.Context(), req)
 	if err != nil {
 		return err
 	}
@@ -81,7 +86,7 @@ func (h *Handler) resetPassword(ctx *Context) error {
 		return err
 	}
 
-	err := h.dx.App().ResetPassword(ctx.Request().Context(), req)
+	err := h.dx.App().ResetPassword(ctx.Context(), req)
 	if err != nil {
 		return err
 	}

@@ -1,9 +1,34 @@
 package user
 
 import (
+	"github.com/arsmn/ontest-server/module/validation"
 	v "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
+
+///// SignedRequest
+type SignedRequest struct {
+	t string `json:"-"`
+	u *User  `json:"-"`
+}
+
+func (r *SignedRequest) WithUser(u *User) *SignedRequest {
+	r.u = u
+	return r
+}
+
+func (r *SignedRequest) WithToken(t string) *SignedRequest {
+	r.t = t
+	return r
+}
+
+func (r *SignedRequest) SignedUser() *User {
+	return r.u
+}
+
+func (r *SignedRequest) Token() string {
+	return r.t
+}
 
 ///// SignupRequest
 
@@ -21,20 +46,6 @@ func (r SignupRequest) Validate() error {
 		v.Field(&r.Password, v.Required, v.Length(5, 50)),
 		v.Field(&r.FirstName, v.Required, v.Length(3, 50)),
 	)
-}
-
-///// SignedRequest
-type SignedRequest struct {
-	u *User `json:"-"`
-}
-
-func (r *SignedRequest) WithUser(u *User) *SignedRequest {
-	r.u = u
-	return r
-}
-
-func (r *SignedRequest) SignedUser() *User {
-	return r.u
 }
 
 ///// SendResetPasswordRequest
@@ -69,12 +80,26 @@ type ChangePasswordRequest struct {
 	SignedRequest
 	CurrentPassword string `json:"current_password,omitempty"`
 	NewPassword     string `json:"new_password,omitempty"`
+	Terminate       bool   `json:"terminate,omitempty"`
 }
 
 func (r ChangePasswordRequest) Validate() error {
 	return v.ValidateStruct(&r,
-		v.Field(&r.CurrentPassword, v.Required, v.Length(5, 50)),
+		v.Field(&r.CurrentPassword, v.Required),
 		v.Field(&r.NewPassword, v.Required, v.Length(5, 50)),
+	)
+}
+
+///// SetPasswordRequest
+
+type SetPasswordRequest struct {
+	SignedRequest
+	Password string `json:"password,omitempty"`
+}
+
+func (r SetPasswordRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Password, v.Required, v.Length(5, 50)),
 	)
 }
 
@@ -89,9 +114,9 @@ type UpdateProfileRequest struct {
 
 func (r UpdateProfileRequest) Validate() error {
 	return v.ValidateStruct(&r,
-		v.Field(&r.Username, v.Required, v.Length(3, 50)),
 		v.Field(&r.LastName, v.Required, v.Length(3, 50)),
 		v.Field(&r.FirstName, v.Required, v.Length(3, 50)),
+		v.Field(&r.Username, v.Required, v.Length(3, 30), v.Match(validation.UsernameRegex)),
 	)
 }
 

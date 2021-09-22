@@ -10,6 +10,7 @@ import (
 type SigninRequest struct {
 	Email    string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
+	Remember bool   `json:"remember,omitempty"`
 }
 
 func (r SigninRequest) Validate() error {

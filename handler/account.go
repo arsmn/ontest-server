@@ -13,6 +13,7 @@ func (h *Handler) accountRouter(r chi.Router) {
 	r.Put("/", h.clown(h.updateProfile, h.withUser))
 	r.Get("/whoami", h.clown(h.whoami, h.withUser))
 	r.Post("/change-password", h.clown(h.changePassword, h.withUser))
+	r.Post("/set-password", h.clown(h.setPassword, h.withUser))
 	r.Get("/check/{type}/{value}", h.clown(h.check))
 	r.Post("/send/verification", h.clown(h.sendVerification, h.withUser))
 	r.Post("/verify", h.clown(h.verify, h.withUser))
@@ -25,7 +26,7 @@ func (h *Handler) updateProfile(ctx *Context) error {
 	}
 
 	req.WithUser(ctx.User())
-	err := h.dx.App().UpdateProfile(ctx.Request().Context(), req)
+	err := h.dx.App().UpdateProfile(ctx.Context(), req)
 	if err != nil {
 		return err
 	}
@@ -34,7 +35,7 @@ func (h *Handler) updateProfile(ctx *Context) error {
 }
 
 func (h *Handler) whoami(ctx *Context) error {
-	return ctx.OK(payload(ctx.User()))
+	return ctx.OK(payload(ctx.User().Map()))
 }
 
 func (h *Handler) changePassword(ctx *Context) error {
@@ -43,8 +44,23 @@ func (h *Handler) changePassword(ctx *Context) error {
 		return err
 	}
 
-	req.WithUser(ctx.User())
-	err := h.dx.App().ChangePassword(ctx.Request().Context(), req)
+	req.WithUser(ctx.User()).WithToken(ctx.Token())
+	err := h.dx.App().ChangePassword(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(success)
+}
+
+func (h *Handler) setPassword(ctx *Context) error {
+	req := new(user.SetPasswordRequest)
+	if err := ctx.BindJson(req); err != nil {
+		return err
+	}
+
+	req.WithUser(ctx.User()).WithToken(ctx.Token())
+	err := h.dx.App().SetPassword(ctx.Context(), req)
 	if err != nil {
 		return err
 	}
@@ -59,9 +75,9 @@ func (h *Handler) check(ctx *Context) error {
 
 	switch typ {
 	case "email":
-		_, err = h.dx.App().GetUserByUsername(ctx.Request().Context(), value)
+		_, err = h.dx.App().GetUserByEmail(ctx.Context(), value)
 	case "username":
-		_, err = h.dx.App().GetUserByUsername(ctx.Request().Context(), value)
+		_, err = h.dx.App().GetUserByUsername(ctx.Context(), value)
 	default:
 		return errors.ErrBadRequest.WithError("invalid type")
 	}
@@ -81,7 +97,7 @@ func (h *Handler) sendVerification(ctx *Context) error {
 	req.WithUser(ctx.User())
 	req.Email = ctx.User().Email
 
-	err := h.dx.App().SendVerification(ctx.Request().Context(), req)
+	err := h.dx.App().SendVerification(ctx.Context(), req)
 	if err != nil {
 		return err
 	}
@@ -97,7 +113,7 @@ func (h *Handler) verify(ctx *Context) error {
 
 	req.WithUser(ctx.User())
 
-	err := h.dx.App().Verify(ctx.Request().Context(), req)
+	err := h.dx.App().Verify(ctx.Context(), req)
 	if err != nil {
 		return err
 	}

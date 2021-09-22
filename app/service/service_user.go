@@ -26,6 +26,10 @@ func (s *Service) GetUserByUsername(ctx context.Context, username string) (*user
 	return s.dx.Persister().FindUserByUsername(ctx, username)
 }
 
+func (s *Service) GetUserByEmail(ctx context.Context, email string) (*user.User, error) {
+	return s.dx.Persister().FindUserByEmail(ctx, email)
+}
+
 func (s *Service) createUser(ctx context.Context, user *user.User) (*user.User, error) {
 	return user, s.dx.Persister().CreateUser(ctx, user)
 }
@@ -119,7 +123,9 @@ func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRe
 		return err
 	}
 
-	if err := s.dx.Hasher().Compare(ctx, []byte(req.CurrentPassword), []byte(req.SignedUser().Password)); err != nil {
+	u := req.SignedUser()
+
+	if err := s.dx.Hasher().Compare(ctx, []byte(req.CurrentPassword), []byte(u.Password)); err != nil {
 		return app.ErrInvalidCredentials
 	}
 
@@ -128,9 +134,45 @@ func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRe
 		return err
 	}
 
-	req.SignedUser().Password = string(pswd)
+	u.Password = string(pswd)
+	err = s.dx.Persister().UpdateUser(ctx, u, "password")
+	if err != nil {
+		return err
+	}
 
-	return s.dx.Persister().UpdateUser(ctx, req.SignedUser(), "password")
+	if req.Terminate {
+		err = s.dx.Persister().RemoveUserSessions(ctx, u.ID, req.Token())
+		if err != nil {
+			s.dx.Logger().Error("error while removing user sessions", xlog.Err(err))
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) SetPassword(ctx context.Context, req *user.SetPasswordRequest) error {
+	if err := v.Validate(req); err != nil {
+		return err
+	}
+
+	u := req.SignedUser()
+
+	if u.PasswordSet() {
+		return nil
+	}
+
+	pswd, err := s.dx.Hasher().Generate(ctx, []byte(req.Password))
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(pswd)
+	err = s.dx.Persister().UpdateUser(ctx, u, "password")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Service) UpdateProfile(ctx context.Context, req *user.UpdateProfileRequest) error {
