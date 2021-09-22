@@ -21,6 +21,10 @@ func (s *Service) GetUser(ctx context.Context, id uint64) (*user.User, error) {
 	return s.dx.Persister().FindUser(ctx, id)
 }
 
+func (s *Service) GetUserByUsername(ctx context.Context, username string) (*user.User, error) {
+	return s.dx.Persister().FindUserByUsername(ctx, username)
+}
+
 func (s *Service) createUser(ctx context.Context, user *user.User) (*user.User, error) {
 	return user, s.dx.Persister().CreateUser(ctx, user)
 }

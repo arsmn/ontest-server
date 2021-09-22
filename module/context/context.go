@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/arsmn/ontest-server/user"
+	"github.com/go-chi/chi/v5"
 )
 
 type Context struct {
@@ -24,6 +25,10 @@ func (ctx *Context) Request() *http.Request {
 
 func (ctx *Context) Response() http.ResponseWriter {
 	return ctx.response
+}
+
+func (ctx *Context) Param(p string) string {
+	return chi.URLParam(ctx.request, p)
 }
 
 func (ctx *Context) User() *user.User {

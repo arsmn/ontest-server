@@ -29,6 +29,10 @@ func (p *Persister) FindUserByEmail(ctx context.Context, email string) (*user.Us
 	return p.findUser(ctx, p.engine.Where("email = ?", email))
 }
 
+func (p *Persister) FindUserByUsername(ctx context.Context, username string) (*user.User, error) {
+	return p.findUser(ctx, p.engine.Where("username = ?", username))
+}
+
 func (p *Persister) CreateUser(_ context.Context, u *user.User) error {
 	_, err := p.engine.InsertOne(u)
 	return handleError(err)
