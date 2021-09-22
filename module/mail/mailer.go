@@ -8,6 +8,7 @@ import (
 
 type Mailer interface {
 	SendResetPassword(context.Context, *user.User, string)
+	SendVerification(context.Context, *user.User, string)
 }
 
 type Provider interface {

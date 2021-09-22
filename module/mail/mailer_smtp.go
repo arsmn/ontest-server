@@ -13,9 +13,13 @@ import (
 )
 
 const (
-	MIME                 = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	ResetPasswordTmpl    = "reset_password.html"
-	ResetPasswordSubject = "Reset Password"
+	MIME = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+
+	ResetPasswordTmpl     = "reset_password.html"
+	EmailVerificationTmpl = "email_verification.html"
+
+	ResetPasswordSubject     = "Reset Password"
+	EmailVerificationSubject = "Verify Email"
 )
 
 type (
@@ -33,7 +37,10 @@ type (
 func NewMailerSMTP(dx smtpDependencies) (*SMTP, error) {
 	c := dx.Settings().Mail.SMTP
 
-	t, err := template.ParseFiles("./module/mail/reset_password.html")
+	t, err := template.ParseFiles(
+		"./module/mail/reset_password.html",
+		"./module/mail/email_verification.html",
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +75,19 @@ func (s *SMTP) SendResetPassword(ctx context.Context, u *user.User, code string)
 
 		if err != nil {
 			s.dx.Logger().Warn(fmt.Sprintf("Error while sending reset password email for: %s", u.Email), xlog.Err(err))
+		}
+	}()
+}
+
+func (s *SMTP) SendVerification(ctx context.Context, u *user.User, code string) {
+	go func() {
+		err := s.sendTemplate(EmailVerificationTmpl, map[string]string{
+			"URL":  fmt.Sprintf("%s/verify-email/%s", s.dx.Settings().Client.WebURL, code),
+			"Name": u.FirstName,
+		}, EmailVerificationSubject, []string{u.Email})
+
+		if err != nil {
+			s.dx.Logger().Warn(fmt.Sprintf("Error while sending email verification email for: %s", u.Email), xlog.Err(err))
 		}
 	}()
 }

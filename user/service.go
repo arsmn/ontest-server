@@ -12,7 +12,10 @@ type Service interface {
 	GetUser(context.Context, uint64) (*User, error)
 	GetUserByUsername(context.Context, string) (*User, error)
 	RegisterUser(context.Context, *SignupRequest) (*User, error)
-	ForgotPassword(context.Context, *ForgotPasswordRequest) error
+	SendResetPassword(context.Context, *SendResetPasswordRequest) error
 	ResetPassword(context.Context, *ResetPasswordRequest) error
 	ChangePassword(context.Context, *ChangePasswordRequest) error
+	UpdateProfile(context.Context, *UpdateProfileRequest) error
+	SendVerification(context.Context, *SendVerificationRequest) error
+	Verify(context.Context, *VerificationRequest) error
 }

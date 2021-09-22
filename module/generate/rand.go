@@ -45,6 +45,10 @@ func ResetPasswordCode(email string) string {
 	return RandomString(30, AlphaNum) + EncodeMD5(email)
 }
 
+func VerificationCode(email string) string {
+	return RandomString(30, AlphaNum) + EncodeMD5(email)
+}
+
 func VerifyResetPasswordCode(code, email string) bool {
 	if len(code) <= 30 {
 		return false

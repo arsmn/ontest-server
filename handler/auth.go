@@ -9,11 +9,9 @@ import (
 func (h *Handler) authRouter(r chi.Router) {
 	r.Post("/signin", h.clown(h.signin))
 	r.Post("/signup", h.clown(h.signup))
-	r.Post("/signout", h.clown(h.withUser(h.signout)))
-	r.Get("/whoami", h.clown(h.whoami, h.withUser))
-	r.Post("/forgot-password", h.clown(h.forgotPassword))
+	r.Post("/signout", h.clown(h.signout, h.withUser))
+	r.Post("/send/reset-password", h.clown(h.sendResetPassword))
 	r.Post("/reset-password", h.clown(h.resetPassword))
-	r.Post("/change-password", h.clown(h.changePassword))
 }
 
 func (h *Handler) signin(ctx *Context) error {
@@ -63,17 +61,13 @@ func (h *Handler) signout(ctx *Context) error {
 	return ctx.OK(success)
 }
 
-func (h *Handler) whoami(ctx *Context) error {
-	return ctx.OK(payload(ctx.User()))
-}
-
-func (h *Handler) forgotPassword(ctx *Context) error {
-	req := new(user.ForgotPasswordRequest)
+func (h *Handler) sendResetPassword(ctx *Context) error {
+	req := new(user.SendResetPasswordRequest)
 	if err := ctx.BindJson(req); err != nil {
 		return err
 	}
 
-	err := h.dx.App().ForgotPassword(ctx.Request().Context(), req)
+	err := h.dx.App().SendResetPassword(ctx.Request().Context(), req)
 	if err != nil {
 		return err
 	}

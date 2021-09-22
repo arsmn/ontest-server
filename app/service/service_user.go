@@ -11,6 +11,7 @@ import (
 	"github.com/arsmn/ontest-server/module/errors"
 	"github.com/arsmn/ontest-server/module/generate"
 	v "github.com/arsmn/ontest-server/module/validation"
+	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/persistence"
 	"github.com/arsmn/ontest-server/user"
 )
@@ -51,7 +52,7 @@ func (s *Service) RegisterUser(ctx context.Context, req *user.SignupRequest) (*u
 	return s.createUser(ctx, u)
 }
 
-func (s *Service) ForgotPassword(ctx context.Context, req *user.ForgotPasswordRequest) error {
+func (s *Service) SendResetPassword(ctx context.Context, req *user.SendResetPasswordRequest) error {
 	if err := v.Validate(req); err != nil {
 		return err
 	}
@@ -103,13 +104,14 @@ func (s *Service) ResetPassword(ctx context.Context, req *user.ResetPasswordRequ
 		return err
 	}
 
-	u.Password = string(pswd)
-	u.Rands = generate.UserRandCode()
-	if err := s.dx.Persister().UpdateUser(ctx, u, "password", "rands"); err != nil {
-		return err
+	if err := s.dx.Cacher().Delete(ctx, key); err != nil {
+		s.dx.Logger().Error(fmt.Sprintf("error while deleting cache key: %s", key), xlog.Err(err))
 	}
 
-	return s.dx.Cacher().Delete(ctx, key)
+	u.Password = string(pswd)
+	u.Rands = generate.UserRandCode()
+
+	return s.dx.Persister().UpdateUser(ctx, u, "password", "rands")
 }
 
 func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRequest) error {
@@ -128,5 +130,72 @@ func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRe
 
 	req.SignedUser().Password = string(pswd)
 
-	return s.dx.Persister().UpdateUser(ctx, req.SignedUser(), "Password")
+	return s.dx.Persister().UpdateUser(ctx, req.SignedUser(), "password")
+}
+
+func (s *Service) UpdateProfile(ctx context.Context, req *user.UpdateProfileRequest) error {
+	if err := v.Validate(req); err != nil {
+		return err
+	}
+
+	u := req.SignedUser()
+	u.FirstName = req.FirstName
+	u.LastName = req.LastName
+	u.Username = req.Username
+
+	return s.dx.Persister().UpdateUser(ctx, req.SignedUser(), "first_name", "last_name", "username")
+}
+
+func (s *Service) SendVerification(ctx context.Context, req *user.SendVerificationRequest) error {
+	if err := v.Validate(req); err != nil {
+		return err
+	}
+
+	u := req.SignedUser()
+
+	if u.EmailVerified {
+		return nil
+	}
+
+	code := generate.ResetPasswordCode(u.Email)
+	if err := s.dx.Cacher().Set(ctx, &cache.Item{
+		Key:   fmt.Sprintf("vc_%s", code),
+		Value: u.ID,
+		TTL:   30 * time.Minute,
+	}); err != nil {
+		return err
+	}
+
+	s.dx.Mailer().SendVerification(ctx, u, code)
+
+	return nil
+}
+
+func (s *Service) Verify(ctx context.Context, req *user.VerificationRequest) error {
+	if err := v.Validate(req); err != nil {
+		return err
+	}
+
+	u := req.SignedUser()
+	if u.EmailVerified {
+		return nil
+	}
+
+	var uid uint64
+	key := fmt.Sprintf("rpc_%s", req.Code)
+	if err := s.dx.Cacher().Get(ctx, key, &uid); err != nil {
+		return err
+	}
+
+	if uid != u.ID {
+		return errors.ErrBadRequest
+	}
+
+	if err := s.dx.Cacher().Delete(ctx, key); err != nil {
+		s.dx.Logger().Error(fmt.Sprintf("error while deleting cache key: %s", key), xlog.Err(err))
+	}
+
+	u.EmailVerified = true
+
+	return s.dx.Persister().UpdateUser(ctx, u, "email_verified")
 }

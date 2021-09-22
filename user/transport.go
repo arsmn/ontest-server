@@ -37,13 +37,13 @@ func (r *SignedRequest) SignedUser() *User {
 	return r.u
 }
 
-///// ForgotPasswordRequest
+///// SendResetPasswordRequest
 
-type ForgotPasswordRequest struct {
+type SendResetPasswordRequest struct {
 	Email string `json:"email,omitempty"`
 }
 
-func (r ForgotPasswordRequest) Validate() error {
+func (r SendResetPasswordRequest) Validate() error {
 	return v.ValidateStruct(&r,
 		v.Field(&r.Email, v.Required, is.Email),
 	)
@@ -75,5 +75,48 @@ func (r ChangePasswordRequest) Validate() error {
 	return v.ValidateStruct(&r,
 		v.Field(&r.CurrentPassword, v.Required, v.Length(5, 50)),
 		v.Field(&r.NewPassword, v.Required, v.Length(5, 50)),
+	)
+}
+
+///// UpdateProfileRequest
+
+type UpdateProfileRequest struct {
+	SignedRequest
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+	Username  string `json:"username,omitempty"`
+}
+
+func (r UpdateProfileRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Username, v.Required, v.Length(3, 50)),
+		v.Field(&r.LastName, v.Required, v.Length(3, 50)),
+		v.Field(&r.FirstName, v.Required, v.Length(3, 50)),
+	)
+}
+
+///// SendVerificationRequest
+
+type SendVerificationRequest struct {
+	SignedRequest
+	Email string `json:"email,omitempty"`
+}
+
+func (r SendVerificationRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Email, v.Required, is.Email),
+	)
+}
+
+///// VerificationRequest
+
+type VerificationRequest struct {
+	SignedRequest
+	Code string `json:"code,omitempty"`
+}
+
+func (r VerificationRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Code, v.Required),
 	)
 }
