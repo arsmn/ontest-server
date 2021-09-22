@@ -113,5 +113,16 @@ func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRe
 		return err
 	}
 
-	return nil
+	if err := s.dx.Hasher().Compare(ctx, []byte(req.CurrentPassword), []byte(req.SignedUser().Password)); err != nil {
+		return app.ErrInvalidCredentials
+	}
+
+	pswd, err := s.dx.Hasher().Generate(ctx, []byte(req.NewPassword))
+	if err != nil {
+		return err
+	}
+
+	req.SignedUser().Password = string(pswd)
+
+	return s.dx.Persister().UpdateUser(ctx, req.SignedUser(), "Password")
 }

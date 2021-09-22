@@ -23,6 +23,20 @@ func (r SignupRequest) Validate() error {
 	)
 }
 
+///// SignedRequest
+type SignedRequest struct {
+	u *User `json:"-"`
+}
+
+func (r *SignedRequest) WithUser(u *User) *SignedRequest {
+	r.u = u
+	return r
+}
+
+func (r *SignedRequest) SignedUser() *User {
+	return r.u
+}
+
 ///// ForgotPasswordRequest
 
 type ForgotPasswordRequest struct {
@@ -52,7 +66,7 @@ func (r ResetPasswordRequest) Validate() error {
 ///// ChangePasswordRequest
 
 type ChangePasswordRequest struct {
-	*User
+	SignedRequest
 	CurrentPassword string `json:"current_password,omitempty"`
 	NewPassword     string `json:"new_password,omitempty"`
 }

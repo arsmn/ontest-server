@@ -17,6 +17,7 @@ type (
 	Map                 = context.Map
 	Context             = context.Context
 	HandleFunc          func(*Context) error
+	Middleware          func(HandleFunc) HandleFunc
 	handlerDependencies interface {
 		app.Provider
 		settings.Provider
@@ -53,6 +54,7 @@ func New(dx handlerDependencies) *Handler {
 
 	root.Route("/auth", h.authRouter)
 	root.Route("/oauth", h.oauthHandler)
+	root.Route("/account", h.accountRouter)
 
 	h.handler = root
 
@@ -71,17 +73,31 @@ func (h *Handler) TemplatesCount() uint32 {
 	return 0
 }
 
-func (h *Handler) clown(fn HandleFunc) http.HandlerFunc {
+func (h *Handler) clown(fn HandleFunc, mws ...Middleware) http.HandlerFunc {
 	h.count++
 
 	handler := http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		ctx := context.Acquire(rw, r)
-		if err := fn(ctx); err != nil {
+		if err := chain(fn, mws)(ctx); err != nil {
 			if catch := handleError(ctx, err); catch != nil {
 				_ = ctx.SendStatus(http.StatusInternalServerError)
 			}
 		}
+		context.Release(ctx)
 	})
 
 	return handler
+}
+
+func chain(endpoint HandleFunc, mws []Middleware) HandleFunc {
+	if len(mws) == 0 {
+		return endpoint
+	}
+
+	h := mws[len(mws)-1](endpoint)
+	for i := len(mws) - 2; i >= 0; i-- {
+		h = mws[i](h)
+	}
+
+	return h
 }

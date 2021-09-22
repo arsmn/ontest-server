@@ -10,9 +10,10 @@ func (h *Handler) authRouter(r chi.Router) {
 	r.Post("/signin", h.clown(h.signin))
 	r.Post("/signup", h.clown(h.signup))
 	r.Post("/signout", h.clown(h.withUser(h.signout)))
-	r.Get("/whoami", h.clown(h.withUser(h.whoami)))
+	r.Get("/whoami", h.clown(h.whoami, h.withUser))
 	r.Post("/forgot-password", h.clown(h.forgotPassword))
-	r.Post("/reset-password", h.clown(h.resettPassword))
+	r.Post("/reset-password", h.clown(h.resetPassword))
+	r.Post("/change-password", h.clown(h.changePassword))
 }
 
 func (h *Handler) signin(ctx *Context) error {
@@ -63,8 +64,7 @@ func (h *Handler) signout(ctx *Context) error {
 }
 
 func (h *Handler) whoami(ctx *Context) error {
-	u := ctx.User().CopySanitize()
-	return ctx.OK(payload(u))
+	return ctx.OK(payload(ctx.User()))
 }
 
 func (h *Handler) forgotPassword(ctx *Context) error {
@@ -81,7 +81,7 @@ func (h *Handler) forgotPassword(ctx *Context) error {
 	return ctx.OK(success)
 }
 
-func (h *Handler) resettPassword(ctx *Context) error {
+func (h *Handler) resetPassword(ctx *Context) error {
 	req := new(user.ResetPasswordRequest)
 	if err := ctx.BindJson(req); err != nil {
 		return err
