@@ -41,6 +41,14 @@ func RandomString(l int, allowedRunes []rune) string {
 	return string(seq)
 }
 
+func RandomInt(limit int64) (int64, error) {
+	int, err := rand.Int(rand.Reader, big.NewInt(limit))
+	if err != nil {
+		return 0, err
+	}
+	return int.Int64(), nil
+}
+
 func ResetPasswordCode(email string) string {
 	return RandomString(30, AlphaNum) + EncodeMD5(email)
 }
@@ -63,4 +71,11 @@ func VerifyResetPasswordCode(code, email string) bool {
 
 func UserRandCode() string {
 	return RandomString(10, AlphaNum)
+}
+
+func TruncateString(str string, limit int) string {
+	if len(str) < limit {
+		return str
+	}
+	return str[:limit]
 }

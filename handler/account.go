@@ -1,9 +1,15 @@
 package handler
 
 import (
+	"bytes"
 	stderr "errors"
+	"image"
+	"io"
+	"strconv"
 
+	"github.com/arsmn/ontest-server/module/avatar"
 	"github.com/arsmn/ontest-server/module/errors"
+	"github.com/arsmn/ontest-server/module/storage"
 	"github.com/arsmn/ontest-server/persistence"
 	"github.com/arsmn/ontest-server/user"
 	"github.com/go-chi/chi/v5"
@@ -17,6 +23,8 @@ func (h *Handler) accountRouter(r chi.Router) {
 	r.Get("/check/{type}/{value}", h.clown(h.check))
 	r.Post("/send/verification", h.clown(h.sendVerification, h.withUser))
 	r.Post("/verify", h.clown(h.verify, h.withUser))
+	r.Post("/avatar", h.clown(h.setAvatar, h.withUser))
+	r.Delete("/avatar", h.clown(h.deleteAvatar, h.withUser))
 }
 
 func (h *Handler) updateProfile(ctx *Context) error {
@@ -31,7 +39,7 @@ func (h *Handler) updateProfile(ctx *Context) error {
 		return err
 	}
 
-	return ctx.OK(success)
+	return ctx.OK(payload(ctx.User().Map()))
 }
 
 func (h *Handler) whoami(ctx *Context) error {
@@ -119,4 +127,53 @@ func (h *Handler) verify(ctx *Context) error {
 	}
 
 	return ctx.OK(success)
+}
+
+func (h *Handler) setAvatar(ctx *Context) (err error) {
+	var img image.Image
+	gen := ctx.Request().URL.Query().Get("gen")
+
+	if gen == "true" {
+		seed := ctx.User().Email + strconv.FormatUint(ctx.User().ID, 10)
+		img, err = avatar.GenerateRandom([]byte(seed))
+		if err != nil {
+			return err
+		}
+	} else {
+		if err = ctx.Request().ParseMultipartForm(10 << 20); err != nil {
+			return err
+		}
+
+		file, _, err := ctx.Request().FormFile("file")
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		buf := new(bytes.Buffer)
+		if _, err := io.Copy(buf, file); err != nil {
+			return err
+		}
+
+		img, err = avatar.PrepareAvatar(buf.Bytes(), 2000, 2000, 290)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = storage.WriteImage(ctx.User().Fs(), "avatar", img)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(payload(ctx.User().Map()))
+}
+
+func (h *Handler) deleteAvatar(ctx *Context) error {
+	err := ctx.User().Fs().Remove("avatar")
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(payload(ctx.User().Map()))
 }

@@ -131,3 +131,9 @@ func (c *Config) listenOn(key string) string {
 func (c *Config) IsProd() bool {
 	return c.Mode == "prod"
 }
+
+func Domain() string {
+	return fmt.Sprintf("http://%s:%d",
+		viper.GetString(keyServeDomain),
+		viper.GetInt(keyServePublicPort))
+}

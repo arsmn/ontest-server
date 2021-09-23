@@ -1,9 +1,14 @@
 package user
 
 import (
+	"fmt"
+	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/arsmn/ontest-server/module/structs"
+	"github.com/arsmn/ontest-server/settings"
+	"github.com/spf13/afero"
 )
 
 type User struct {
@@ -21,6 +26,8 @@ type User struct {
 	CreatedAt time.Time `xorm:"created" json:"created_at" field:"created_at"`
 	UpdatedAt time.Time `xorm:"updated" json:"updated_at" field:"updated_at"`
 	DeletedAt time.Time `xorm:"deleted" json:"-" field:"-"`
+
+	fs afero.Fs `xorm:"-" json:"-" field:"-"`
 }
 
 func (u *User) FullName() string {
@@ -32,6 +39,22 @@ func (u *User) FullName() string {
 
 func (u *User) PasswordSet() bool {
 	return u.Password != ""
+}
+
+func (u *User) Fs() afero.Fs {
+	if u.fs == nil {
+		path := filepath.Join("files", strconv.FormatUint(u.ID, 10))
+		u.fs = afero.NewBasePathFs(afero.NewOsFs(), path)
+	}
+	return u.fs
+}
+
+func (u *User) Avatar() string {
+	ok, err := afero.Exists(u.Fs(), "avatar")
+	if !ok || err != nil {
+		return ""
+	}
+	return fmt.Sprintf("%s/files/%d/avatar", settings.Domain(), u.ID)
 }
 
 var PrivateFields = []string{
@@ -83,6 +106,7 @@ func (u *User) CopySanitize(fields ...string) *User {
 
 func (u *User) Map(excludes ...string) map[string]interface{} {
 	m := structs.Map(u)
+	m["avatar"] = u.Avatar()
 	m["full_name"] = u.FullName()
 	m["password_set"] = u.PasswordSet()
 

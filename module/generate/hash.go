@@ -24,10 +24,3 @@ func EncodeSha256(str string) string {
 	_, _ = h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
 }
-
-func TruncateString(str string, limit int) string {
-	if len(str) < limit {
-		return str
-	}
-	return str[:limit]
-}
