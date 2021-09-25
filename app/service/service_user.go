@@ -243,3 +243,13 @@ func (s *Service) Verify(ctx context.Context, req *user.VerificationRequest) err
 
 	return s.dx.Persister().UpdateUser(ctx, u, "email_verified")
 }
+
+func (s *Service) SetPreference(ctx context.Context, req *user.SetPreferenceRequest) error {
+	if err := v.Validate(req); err != nil {
+		return err
+	}
+
+	u := req.SignedUser().SetPreference(req.Key, req.Value)
+
+	return s.dx.Persister().UpdateUser(ctx, u, "preferences")
+}

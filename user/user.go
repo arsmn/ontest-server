@@ -12,16 +12,17 @@ import (
 )
 
 type User struct {
-	ID            uint64 `xorm:"pk 'id'" json:"id" field:"id"`
-	Username      string `xorm:"varchar(50) not null unique" json:"username" field:"username"`
-	FirstName     string `xorm:"varchar(50) not null" json:"first_name" field:"first_name"`
-	LastName      string `xorm:"varchar(50) not null" json:"last_name" field:"last_name"`
-	Email         string `xorm:"varchar(100) not null unique" json:"email" field:"email"`
-	Password      string `xorm:"varchar(250) not null" json:"-" field:"-"`
-	EmailVerified bool   `xorm:"not null" json:"email_verified" field:"email_verified"`
-	Verified      bool   `xorm:"not null" json:"verified" field:"verified"`
-	IsActive      bool   `xorm:"not null" json:"is_active" field:"is_active"`
-	Rands         string `xorm:"varchar(10) not null" json:"-" field:"-"`
+	ID            uint64            `xorm:"pk 'id'" json:"id" field:"id"`
+	Username      string            `xorm:"varchar(50) not null unique" json:"username" field:"username"`
+	FirstName     string            `xorm:"varchar(50) not null" json:"first_name" field:"first_name"`
+	LastName      string            `xorm:"varchar(50) not null" json:"last_name" field:"last_name"`
+	Email         string            `xorm:"varchar(100) not null unique" json:"email" field:"email"`
+	Password      string            `xorm:"varchar(250) not null" json:"-" field:"-"`
+	EmailVerified bool              `xorm:"not null" json:"email_verified" field:"email_verified"`
+	Verified      bool              `xorm:"not null" json:"verified" field:"verified"`
+	IsActive      bool              `xorm:"not null" json:"is_active" field:"is_active"`
+	Rands         string            `xorm:"varchar(10) not null" json:"-" field:"-"`
+	Preferences   map[string]string `xorm:"json" json:"preferences" field:"preferences"`
 
 	CreatedAt time.Time `xorm:"created" json:"created_at" field:"created_at"`
 	UpdatedAt time.Time `xorm:"updated" json:"updated_at" field:"updated_at"`
@@ -55,6 +56,14 @@ func (u *User) Avatar() string {
 		return ""
 	}
 	return fmt.Sprintf("%s/files/%d/avatar", settings.Domain(), u.ID)
+}
+
+func (u *User) SetPreference(key, value string) *User {
+	if u.Preferences == nil {
+		u.Preferences = make(map[string]string)
+	}
+	u.Preferences[key] = value
+	return u
 }
 
 var PrivateFields = []string{

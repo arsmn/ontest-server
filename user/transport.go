@@ -145,3 +145,17 @@ func (r VerificationRequest) Validate() error {
 		v.Field(&r.Code, v.Required),
 	)
 }
+
+///// SetPreferenceRequest
+
+type SetPreferenceRequest struct {
+	SignedRequest
+	Key   string `json:"key,omitempty"`
+	Value string `json:"value,omitempty"`
+}
+
+func (r SetPreferenceRequest) Validate() error {
+	return v.ValidateStruct(&r,
+		v.Field(&r.Key, v.Required),
+	)
+}

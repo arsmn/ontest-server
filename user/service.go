@@ -20,4 +20,5 @@ type Service interface {
 	UpdateProfile(context.Context, *UpdateProfileRequest) error
 	SendVerification(context.Context, *SendVerificationRequest) error
 	Verify(context.Context, *VerificationRequest) error
+	SetPreference(context.Context, *SetPreferenceRequest) error
 }

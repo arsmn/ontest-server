@@ -25,6 +25,7 @@ func (h *Handler) accountRouter(r chi.Router) {
 	r.Post("/verify", h.clown(h.verify, h.withUser))
 	r.Post("/avatar", h.clown(h.setAvatar, h.withUser))
 	r.Delete("/avatar", h.clown(h.deleteAvatar, h.withUser))
+	r.Post("/set-preference", h.clown(h.setPreference, h.withUser))
 }
 
 func (h *Handler) updateProfile(ctx *Context) error {
@@ -176,4 +177,19 @@ func (h *Handler) deleteAvatar(ctx *Context) error {
 	}
 
 	return ctx.OK(payload(ctx.User().Map()))
+}
+
+func (h *Handler) setPreference(ctx *Context) error {
+	req := new(user.SetPreferenceRequest)
+	if err := ctx.BindJson(req); err != nil {
+		return err
+	}
+
+	req.WithUser(ctx.User())
+	err := h.dx.App().SetPreference(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(success)
 }
