@@ -45,12 +45,14 @@ func (s *Service) RegisterUser(ctx context.Context, req *user.SignupRequest) (*u
 	}
 
 	u := &user.User{
-		ID:       generate.UID(),
-		Username: generate.HFUID(),
-		Email:    req.Email,
-		IsActive: true,
-		Password: string(pswd),
-		Rands:    generate.UserRandCode(),
+		ID:        generate.UID(),
+		Username:  generate.HFUID(),
+		Email:     req.Email,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		IsActive:  true,
+		Password:  string(pswd),
+		Rands:     generate.UserRandCode(),
 	}
 
 	return s.createUser(ctx, u)

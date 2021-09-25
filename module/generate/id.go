@@ -29,7 +29,7 @@ func UID() uint64 {
 }
 
 func HFUID() string {
-	id, err := gonanoid.New()
+	id, err := gonanoid.New(10)
 	if err != nil {
 		panic(err)
 	}
