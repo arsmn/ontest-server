@@ -124,13 +124,6 @@ func (r UpdateProfileRequest) Validate() error {
 
 type SendVerificationRequest struct {
 	SignedRequest
-	Email string `json:"email,omitempty"`
-}
-
-func (r SendVerificationRequest) Validate() error {
-	return v.ValidateStruct(&r,
-		v.Field(&r.Email, v.Required, is.Email),
-	)
 }
 
 ///// VerificationRequest

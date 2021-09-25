@@ -9,7 +9,7 @@ import (
 func (h *Handler) authRouter(r chi.Router) {
 	r.Post("/signin", h.clown(h.signin))
 	r.Post("/signup", h.clown(h.signup))
-	r.Post("/signout", h.clown(h.signout, h.withUser))
+	r.Post("/signout", h.clown(h.signout, h.withAuth))
 	r.Post("/send/reset-password", h.clown(h.sendResetPassword))
 	r.Post("/reset-password", h.clown(h.resetPassword))
 }

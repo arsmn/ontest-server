@@ -5,7 +5,7 @@ import (
 	stderr "errors"
 	"image"
 	"io"
-	"strconv"
+	"strings"
 
 	"github.com/arsmn/ontest-server/module/avatar"
 	"github.com/arsmn/ontest-server/module/errors"
@@ -16,16 +16,16 @@ import (
 )
 
 func (h *Handler) accountRouter(r chi.Router) {
-	r.Put("/", h.clown(h.updateProfile, h.withUser))
-	r.Get("/whoami", h.clown(h.whoami, h.withUser))
-	r.Post("/change-password", h.clown(h.changePassword, h.withUser))
-	r.Post("/set-password", h.clown(h.setPassword, h.withUser))
-	r.Get("/check/{type}/{value}", h.clown(h.check))
-	r.Post("/send/verification", h.clown(h.sendVerification, h.withUser))
-	r.Post("/verify", h.clown(h.verify, h.withUser))
-	r.Post("/avatar", h.clown(h.setAvatar, h.withUser))
-	r.Delete("/avatar", h.clown(h.deleteAvatar, h.withUser))
-	r.Post("/set-preference", h.clown(h.setPreference, h.withUser))
+	r.Put("/", h.clown(h.updateProfile, h.withAuth))
+	r.Get("/whoami", h.clown(h.whoami, h.withAuth))
+	r.Post("/change-password", h.clown(h.changePassword, h.withAuth))
+	r.Post("/set-password", h.clown(h.setPassword, h.withAuth))
+	r.Get("/check/{type}/{value}", h.clown(h.check, h.withUser))
+	r.Post("/send/verification", h.clown(h.sendVerification, h.withAuth))
+	r.Post("/verify", h.clown(h.verify, h.withAuth))
+	r.Post("/avatar", h.clown(h.setAvatar, h.withAuth))
+	r.Delete("/avatar", h.clown(h.deleteAvatar, h.withAuth))
+	r.Post("/set-preference", h.clown(h.setPreference, h.withAuth))
 }
 
 func (h *Handler) updateProfile(ctx *Context) error {
@@ -98,13 +98,27 @@ func (h *Handler) check(ctx *Context) error {
 		return err
 	}
 
-	return errors.ErrConflict.WithError(typ + " is taken")
+	if ctx.Signed() {
+		var self bool
+
+		switch typ {
+		case "email":
+			self = ctx.User().Email == value
+		case "username":
+			self = ctx.User().Username == value
+		}
+
+		if self {
+			return ctx.OK(success)
+		}
+	}
+
+	return errors.ErrConflict.WithError(strings.Title(typ) + " is taken")
 }
 
 func (h *Handler) sendVerification(ctx *Context) error {
 	req := new(user.SendVerificationRequest)
 	req.WithUser(ctx.User())
-	req.Email = ctx.User().Email
 
 	err := h.dx.App().SendVerification(ctx.Context(), req)
 	if err != nil {
@@ -135,8 +149,7 @@ func (h *Handler) setAvatar(ctx *Context) (err error) {
 	gen := ctx.Request().URL.Query().Get("gen")
 
 	if gen == "true" {
-		seed := ctx.User().Email + strconv.FormatUint(ctx.User().ID, 10)
-		img, err = avatar.GenerateRandom([]byte(seed))
+		img, err = avatar.GenerateRandom(ctx.User())
 		if err != nil {
 			return err
 		}

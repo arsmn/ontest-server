@@ -54,3 +54,7 @@ func (ctx *Context) Session() *session.Session {
 func (ctx *Context) Token() string {
 	return ctx.sess.Token
 }
+
+func (ctx *Context) Signed() bool {
+	return ctx.user != nil && ctx.sess != nil
+}

@@ -13,6 +13,7 @@ import (
 
 	"github.com/arsmn/ontest-server/module/errors"
 	"github.com/arsmn/ontest-server/module/generate"
+	"github.com/arsmn/ontest-server/user"
 	"github.com/disintegration/imaging"
 	"github.com/issue9/identicon"
 )
@@ -23,7 +24,7 @@ func GenerateRandomSize(size int, data []byte) (image.Image, error) {
 	randExtent := len(palette.WebSafe) - 32
 	integer, err := generate.RandomInt(int64(randExtent))
 	if err != nil {
-		return nil, fmt.Errorf("util.RandomInt: %v", err)
+		return nil, fmt.Errorf("avatar.GenerateRandomSize: %v", err)
 	}
 	colorIndex := int(integer)
 	backColorIndex := colorIndex - 1
@@ -39,7 +40,8 @@ func GenerateRandomSize(size int, data []byte) (image.Image, error) {
 	return imgMaker.Make(data), nil
 }
 
-func GenerateRandom(data []byte) (image.Image, error) {
+func GenerateRandom(u *user.User) (image.Image, error) {
+	data := []byte(fmt.Sprintf("%s%d%s", u.Email, u.ID, u.Rands))
 	return GenerateRandomSize(AvatarSize, data)
 }
 
