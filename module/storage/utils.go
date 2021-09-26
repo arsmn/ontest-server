@@ -38,12 +38,12 @@ func WriteFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 
 func WriteImage(fs afero.Fs, dst string, img image.Image) (os.FileInfo, error) {
 	dir, _ := path.Split(dst)
-	err := fs.MkdirAll(dir, 0775) //nolint:gomnd
+	err := fs.MkdirAll(dir, 0777) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775) //nolint:gomnd
+	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}

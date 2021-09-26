@@ -13,9 +13,9 @@ type jsonPayload struct {
 
 var success = &jsonPayload{Success: true}
 
-func handleError(ctx *context.Context, err error) error {
+func (h *Handler) handleError(ctx *context.Context, err error) error {
 	reqId := ctx.Request().Header.Get("X-Request-ID")
-	defErr := errors.ToError(err, reqId)
+	defErr := errors.ToError(h.dx, err, reqId)
 	payload := &jsonPayload{Success: false, Error: defErr}
 	return ctx.Json(defErr.CodeField, payload)
 }

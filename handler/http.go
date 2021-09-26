@@ -68,7 +68,7 @@ func (h *Handler) clown(fn HandleFunc, mws ...Middleware) http.HandlerFunc {
 	handler := http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		ctx := context.Acquire(rw, r)
 		if err := chain(fn, mws)(ctx); err != nil {
-			if catch := handleError(ctx, err); catch != nil {
+			if catch := h.handleError(ctx, err); catch != nil {
 				_ = ctx.SendStatus(http.StatusInternalServerError)
 			}
 		}

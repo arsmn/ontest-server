@@ -4,6 +4,8 @@ import (
 	stderr "errors"
 	"fmt"
 	"net/http"
+
+	"github.com/arsmn/ontest-server/module/xlog"
 )
 
 type Error struct {
@@ -97,7 +99,7 @@ func (e Error) WithDetailf(key string, message string, args ...interface{}) *Err
 	return &e
 }
 
-func ToError(err error, id string) *Error {
+func ToError(l xlog.Provider, err error, id string) *Error {
 	de := &Error{
 		RIDField:     id,
 		CodeField:    http.StatusInternalServerError,
@@ -130,7 +132,8 @@ func ToError(err error, id string) *Error {
 	}
 
 	if de.StatusCode() == http.StatusInternalServerError {
-		de.ErrorField = "an error occured"
+		l.Logger().Error("unexpected error", xlog.Err(err))
+		de.ErrorField = "An error occured"
 	}
 
 	return de
