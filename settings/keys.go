@@ -34,4 +34,7 @@ const (
 	keyMailSMTPPassword              = "mail.smtp.password"
 	keyMailSMTPHost                  = "mail.smtp.host"
 	keyMailSMTPPort                  = "mail.smtp.port"
+	keyCacheRedisDSN                 = "cache.redis.dsn"
+	keyCacheRedisPassword            = "cache.redis.password"
+	keyCacheRedisDB                  = "cache.redis.db"
 )

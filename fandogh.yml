@@ -1,0 +1,59 @@
+kind: ExternalService
+name: ontest-server
+spec:
+  allow_http: true
+  env:
+    - name: ONTEST_SERVE_DOMAIN
+      value: ontest-server-arsmn.fandogh.cloud
+    - name: ONTEST_SQL_DRIVER
+      value: postgres
+    - name: ONTEST_SQL_DSN
+      secret: sqldsn
+    - name: ONTEST_OAUTH_GOOGLE_CLIENT_ID
+      secret: oauthgoogleclientid
+    - name: ONTEST_OAUTH_GOOGLE_CLIENT_SECRET
+      secret: oauthgoogleclientsecret
+    - name: ONTEST_OAUTH_GOOGLE_REDIRECT_URL
+      value: https://ontest-server-arsmn.fandogh.cloud/oauth/google/callback
+    - name: ONTEST_OAUTH_GOOGLE_SCOPES
+      value: https://www.googleapis.com/auth/userinfo.email, https://www.googleapis.com/auth/userinfo.profile
+    - name: ONTEST_OAUTH_GITHUB_CLIENT_ID
+      secret: oauthgithubclientid
+    - name: ONTEST_OAUTH_GITHUB_CLIENT_SECRET
+      secret: oauthgithubclientsecret
+    - name: ONTEST_OAUTH_GITHUB_REDIRECT_URL
+      value: https://ontest-server-arsmn.fandogh.cloud/oauth/github/callback
+    - name: ONTEST_OAUTH_GITHUB_SCOPES
+      value: read:user
+    - name: ONTEST_OAUTH_LINKEDIN_CLIENT_ID
+      secret: oauthlinkedinclientid
+    - name: ONTEST_OAUTH_LINKEDIN_CLIENT_SECRET
+      secret: oauthlinkedinclientsecret
+    - name: ONTEST_OAUTH_LINKEDIN_REDIRECT_URL
+      value: https://ontest-server-arsmn.fandogh.cloud/oauth/linkedin/callback
+    - name: ONTEST_OAUTH_LINKEDIN_SCOPES
+      value: r_liteprofile, r_emailaddress"
+    - name: ONTEST_CLIENT_WEB_URL
+      value: https://ontest-blazor-arsmn.fandogh.cloud
+    - name: ONTEST_MAIL_SMTP_FROM
+      secret: mailsmtpfrom
+    - name: ONTEST_MAIL_SMTP_PASSWORD
+      secret: mailsmtppassword
+    - name: ONTEST_MAIL_SMTP_HOST
+      value: smtp.gmail.com
+    - name: ONTEST_MAIL_SMTP_PORT
+      value: 587
+    - name: ONTEST_CACHE_REDIS_DSN
+      secret: redisdsn
+    - name: ONTEST_CACHE_REDIS_PASSWORD
+      secret: redispassword
+    - name: ONTEST_CACHE_REDIS_DB
+      secret: redisdb
+
+  image: 'ontest-server:${TAG}'
+  image_pull_policy: IfNotPresent
+  path: /
+  port: 8080
+  replicas: 1
+  resources:
+    memory: 200Mi

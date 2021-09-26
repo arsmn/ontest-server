@@ -57,6 +57,13 @@ type (
 				Host, Port string
 			}
 		}
+		Cache struct {
+			Redis struct {
+				DSN      string
+				Password string
+				DB       int
+			}
+		}
 	}
 )
 
@@ -111,6 +118,11 @@ func New(l *xlog.Logger) *Config {
 	conf.Mail.SMTP.Password = viper.GetString(keyMailSMTPPassword)
 	conf.Mail.SMTP.Host = viper.GetString(keyMailSMTPHost)
 	conf.Mail.SMTP.Port = viper.GetString(keyMailSMTPPort)
+
+	// Cache
+	conf.Cache.Redis.DSN = viper.GetString(keyCacheRedisDSN)
+	conf.Cache.Redis.Password = viper.GetString(keyCacheRedisPassword)
+	conf.Cache.Redis.DB = viper.GetInt(keyCacheRedisDB)
 
 	return conf
 }

@@ -50,6 +50,7 @@ func NewPersister(dx persisterDependencies) (*Persister, error) {
 					xlog.Int("maxIdleConns", maxIdleConns),
 					xlog.Duration("connMaxLifetime", connMaxLifetime))
 
+			dx.Logger().Debug("database driver: ", xlog.String("driver", dx.Settings().SQL.Driver))
 			engine, err := xorm.NewEngine(dx.Settings().SQL.Driver, sqlcon.FinalizeDSN(dx.Logger(), cleanedDSN))
 			if err != nil {
 				dx.Logger().Warn("Unable to connect to database, retrying.", xlog.Err(err))

@@ -21,10 +21,10 @@ type (
 )
 
 func NewCacherRedis(dx redisDependencies) *Redis {
-	ring := redis.NewRing(&redis.RingOptions{
-		Addrs: map[string]string{
-			"server1": ":6379",
-		},
+	ring := redis.NewClient(&redis.Options{
+		Addr:     dx.Settings().Cache.Redis.DSN,
+		Password: dx.Settings().Cache.Redis.Password,
+		DB:       dx.Settings().Cache.Redis.DB,
 	})
 
 	r := new(Redis)
