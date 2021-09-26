@@ -25,7 +25,5 @@ COPY --from=certer /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder build/ontest /usr/bin/ontest
 COPY --from=builder build/module/mail /module/mail/
 
-USER 1000
-
 ENTRYPOINT ["ontest"]
 CMD ["serve"]

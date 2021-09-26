@@ -55,7 +55,7 @@ func (u *User) Avatar() string {
 	if !ok || err != nil {
 		return ""
 	}
-	return fmt.Sprintf("%s/files/%d/avatar", settings.Domain(), u.ID)
+	return fmt.Sprintf("%s/files/%d/avatar", settings.APIURL(), u.ID)
 }
 
 func (u *User) SetPreference(key, value string) *User {

@@ -3,6 +3,7 @@ package settings
 const (
 	keyMode                          = "mode"
 	keyServeDomain                   = "serve.domain"
+	keyServeAPIURL                   = "serve.api_url"
 	keyServeStartupMessageEnabled    = "serve.startup_message_enabled"
 	keyServePublicPort               = "serve.public.port"
 	keyServePublicHost               = "serve.public.host"

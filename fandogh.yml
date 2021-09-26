@@ -5,6 +5,8 @@ spec:
   env:
     - name: ONTEST_SERVE_DOMAIN
       value: ontest-server-arsmn.fandogh.cloud
+    - name: ONTEST_SERVE_API_URL
+      value: https://ontest-server-arsmn.fandogh.cloud
     - name: ONTEST_SQL_DRIVER
       value: postgres
     - name: ONTEST_SQL_DSN

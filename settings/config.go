@@ -19,6 +19,7 @@ type (
 		Mode  string
 		Serve struct {
 			Domain         string
+			APIURL         string
 			StartupMessage bool
 			Public         struct {
 				Port string
@@ -81,6 +82,7 @@ func New(l *xlog.Logger) *Config {
 
 	// Serve
 	conf.Serve.Domain = viper.GetString(keyServeDomain)
+	conf.Serve.APIURL = viper.GetString(keyServeAPIURL)
 	conf.Serve.StartupMessage = viper.GetBool(keyServeStartupMessageEnabled)
 	conf.Serve.Public.Port = viper.GetString(keyServePublicPort)
 	conf.Serve.Public.Host = viper.GetString(keyServePublicHost)
@@ -168,8 +170,6 @@ func (c *Config) IsDevelopment() bool {
 	return c.IsMode("development")
 }
 
-func Domain() string {
-	return fmt.Sprintf("http://%s:%d",
-		viper.GetString(keyServeDomain),
-		viper.GetInt(keyServePublicPort))
+func APIURL() string {
+	return viper.GetString(keyServeAPIURL)
 }
