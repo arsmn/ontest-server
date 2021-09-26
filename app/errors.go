@@ -10,6 +10,6 @@ var (
 	ErrInvalidCredentials = &errors.Error{
 		CodeField:   http.StatusBadRequest,
 		StatusField: http.StatusText(http.StatusBadRequest),
-		ErrorField:  "the provided credentials are invalid",
+		ErrorField:  "The provided credentials are invalid",
 	}
 )

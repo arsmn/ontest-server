@@ -17,15 +17,25 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN go build main.go
+RUN go build -o ontest .
+
+FROM alpine:3.13 AS certer
+
+RUN apk add -U --no-cache ca-certificates
 
 FROM scratch
 
-COPY --from=builder build/main .
+COPY --from=certer /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+COPY --from=builder build/ontest .
 COPY --from=builder build/module/mail /module/mail/
+COPY ontest /usr/bin/ontest
+
+USER 1000
 
 # Export necessary port
 EXPOSE 8080
 
 # Command to run when starting the container
-CMD ["/main", "serve"]
+ENTRYPOINT ["ontest"]
+CMD [ "serve" ]
