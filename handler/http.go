@@ -38,6 +38,7 @@ func New(dx handlerDependencies) *Handler {
 
 	root.Use(h.cors)
 
+	root.HandleFunc("/", h.root)
 	root.Route("/auth", h.authRouter)
 	root.Route("/oauth", h.oauthHandler)
 	root.Route("/account", h.accountRouter)
