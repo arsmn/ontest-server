@@ -3,11 +3,9 @@ package service
 import (
 	"context"
 	stderr "errors"
-	"time"
 
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/errors"
-	"github.com/arsmn/ontest-server/module/generate"
 	v "github.com/arsmn/ontest-server/module/validation"
 	"github.com/arsmn/ontest-server/persistence"
 	"github.com/arsmn/ontest-server/session"
@@ -36,32 +34,40 @@ func (s *Service) DeleteSession(ctx context.Context, token string) error {
 	return s.dx.Persister().RemoveSession(ctx, sess.ID)
 }
 
-func (s *Service) createSession(ctx context.Context, userID uint64) (*session.Session, error) {
-	sess := &session.Session{
-		ID:        generate.UID(),
-		UserID:    userID,
-		Token:     generate.RandomString(35, generate.AlphaNum),
-		Active:    true,
-		IssuedAt:  time.Now().UTC(),
-		ExpiresAt: time.Now().UTC().Add(s.dx.Settings().Session.Lifespan),
-	}
-	return sess, s.dx.Persister().CreateSession(ctx, sess)
-}
-
 func (s *Service) IssueSession(ctx context.Context, req *session.SigninRequest) (*session.Session, error) {
 	if err := v.Validate(req); err != nil {
 		return nil, err
 	}
 
-	user, err := s.dx.Persister().FindUserByEmail(ctx, req.Email)
-	if err != nil {
-		if stderr.Is(err, persistence.ErrNoRows) {
-			return nil, app.ErrInvalidCredentials
+	find := func(ctx context.Context, typ, value string) (*user.User, error) {
+		switch typ {
+		case "email":
+			return s.dx.Persister().FindUserByEmail(ctx, value)
+		case "username":
+			return s.dx.Persister().FindUserByUsername(ctx, value)
+		default:
+			return nil, nil
 		}
-		return nil, err
 	}
 
-	if user.Password == "" {
+	var user *user.User
+	for _, t := range []string{"email", "username"} {
+		u, err := find(ctx, t, req.Identifier)
+		if err != nil {
+			if stderr.Is(err, persistence.ErrNoRows) {
+				continue
+			}
+			return nil, err
+		}
+		user = u
+		break
+	}
+
+	if user == nil {
+		return nil, app.ErrInvalidCredentials
+	}
+
+	if !user.PasswordSet() {
 		return nil, app.ErrInvalidCredentials
 	}
 
@@ -69,7 +75,13 @@ func (s *Service) IssueSession(ctx context.Context, req *session.SigninRequest) 
 		return nil, app.ErrInvalidCredentials
 	}
 
-	return s.createSession(ctx, user.ID)
+	sess := session.NewActiveSession(user.ID, s.dx.Settings().Session.Lifespan)
+
+	if err := s.dx.Persister().CreateSession(ctx, sess); err != nil {
+		return nil, err
+	}
+
+	return sess, nil
 }
 
 func (s *Service) OAuthIssueSession(ctx context.Context, req *session.OAuthSignRequest) (*session.Session, error) {
@@ -88,20 +100,18 @@ func (s *Service) OAuthIssueSession(ctx context.Context, req *session.OAuthSignR
 	}
 
 	if newuser {
-		u = &user.User{
-			ID:            generate.UID(),
-			Username:      generate.HFUID(),
-			Email:         req.Email,
-			FirstName:     req.FirstName,
-			LastName:      req.LastName,
-			IsActive:      true,
-			EmailVerified: true,
-			Rands:         generate.UserRandCode(),
-		}
+		u = user.NewActiveUser(req.FirstName, req.LastName, req.Email)
+		u.EmailVerified = true
 		if _, err := s.createUser(ctx, u); err != nil {
 			return nil, err
 		}
 	}
 
-	return s.createSession(ctx, u.ID)
+	sess := session.NewActiveSession(u.ID, s.dx.Settings().Session.Lifespan)
+
+	if err := s.dx.Persister().CreateSession(ctx, sess); err != nil {
+		return nil, err
+	}
+
+	return sess, nil
 }

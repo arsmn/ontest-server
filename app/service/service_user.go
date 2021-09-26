@@ -44,16 +44,8 @@ func (s *Service) RegisterUser(ctx context.Context, req *user.SignupRequest) (*u
 		return nil, err
 	}
 
-	u := &user.User{
-		ID:        generate.UID(),
-		Username:  generate.HFUID(),
-		Email:     req.Email,
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
-		IsActive:  true,
-		Password:  string(pswd),
-		Rands:     generate.UserRandCode(),
-	}
+	u := user.NewActiveUser(req.FirstName, req.LastName, req.Email)
+	u.Password = string(pswd)
 
 	return s.createUser(ctx, u)
 }
@@ -115,7 +107,7 @@ func (s *Service) ResetPassword(ctx context.Context, req *user.ResetPasswordRequ
 	}
 
 	u.Password = string(pswd)
-	u.Rands = generate.UserRandCode()
+	u.Rands = generate.RandCode()
 
 	return s.dx.Persister().UpdateUser(ctx, u, "password", "rands")
 }

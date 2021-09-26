@@ -1,6 +1,10 @@
 package session
 
-import "time"
+import (
+	"time"
+
+	"github.com/arsmn/ontest-server/module/generate"
+)
 
 type Session struct {
 	ID        uint64    `xorm:"pk 'id'"`
@@ -13,6 +17,17 @@ type Session struct {
 	CreatedAt time.Time `xorm:"created"`
 	UpdatedAt time.Time `xorm:"updated"`
 	DeletedAt time.Time `xorm:"deleted"`
+}
+
+func NewActiveSession(userID uint64, lifespan time.Duration) *Session {
+	return &Session{
+		ID:        generate.UID(),
+		UserID:    userID,
+		Token:     generate.SessionToken(),
+		Active:    true,
+		IssuedAt:  time.Now().UTC(),
+		ExpiresAt: time.Now().UTC().Add(lifespan),
+	}
 }
 
 func (s *Session) IsActive() bool {

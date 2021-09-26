@@ -2,7 +2,6 @@ package driver
 
 import (
 	"context"
-	"sync"
 
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/app/service"
@@ -17,9 +16,8 @@ import (
 )
 
 type RegistryCore struct {
-	mtx sync.RWMutex
-	l   *xlog.Logger
-	c   *settings.Config
+	l *xlog.Logger
+	c *settings.Config
 
 	app            app.App
 	persister      persistence.Persister
@@ -47,7 +45,7 @@ func (r *RegistryCore) Init(ctx context.Context) (err error) {
 		return err
 	}
 
-	r.app = service.NewApp(r)
+	r.app = service.NewAppService(r)
 	r.cacher = cache.NewCacherRedis(r)
 	r.passwordHasher = hash.NewHasherArgon2(r)
 

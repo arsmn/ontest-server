@@ -57,6 +57,14 @@ func VerificationCode(email string) string {
 	return RandomString(30, AlphaNum) + EncodeMD5(email)
 }
 
+func RandCode() string {
+	return RandomString(10, AlphaNum)
+}
+
+func SessionToken() string {
+	return RandomString(35, AlphaNum)
+}
+
 func VerifyResetPasswordCode(code, email string) bool {
 	if len(code) <= 30 {
 		return false
@@ -67,10 +75,6 @@ func VerifyResetPasswordCode(code, email string) bool {
 	}
 
 	return true
-}
-
-func UserRandCode() string {
-	return RandomString(10, AlphaNum)
 }
 
 func TruncateString(str string, limit int) string {

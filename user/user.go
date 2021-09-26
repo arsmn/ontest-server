@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/arsmn/ontest-server/module/generate"
 	"github.com/arsmn/ontest-server/module/structs"
 	"github.com/arsmn/ontest-server/settings"
 	"github.com/spf13/afero"
@@ -29,6 +30,18 @@ type User struct {
 	DeletedAt time.Time `xorm:"deleted" json:"-" field:"-"`
 
 	fs afero.Fs `xorm:"-" json:"-" field:"-"`
+}
+
+func NewActiveUser(fn, ln, email string) *User {
+	return &User{
+		ID:        generate.UID(),
+		Username:  generate.HFUID(),
+		Email:     email,
+		FirstName: fn,
+		LastName:  ln,
+		IsActive:  true,
+		Rands:     generate.RandCode(),
+	}
 }
 
 func (u *User) FullName() string {

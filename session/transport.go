@@ -8,14 +8,14 @@ import (
 ///// SigninRequest
 
 type SigninRequest struct {
-	Email    string `json:"email,omitempty"`
-	Password string `json:"password,omitempty"`
-	Remember bool   `json:"remember,omitempty"`
+	Identifier string `json:"identifier,omitempty"`
+	Password   string `json:"password,omitempty"`
+	Remember   bool   `json:"remember,omitempty"`
 }
 
 func (r SigninRequest) Validate() error {
 	return v.ValidateStruct(&r,
-		v.Field(&r.Email, v.Required),
+		v.Field(&r.Identifier, v.Required),
 		v.Field(&r.Password, v.Required),
 	)
 }

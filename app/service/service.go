@@ -26,6 +26,6 @@ type (
 	}
 )
 
-func NewApp(dx serviceDependencies) *Service {
+func NewAppService(dx serviceDependencies) *Service {
 	return &Service{dx}
 }
