@@ -19,11 +19,9 @@ func ServePublic(ctx context.Context, r driver.Registry, wg *sync.WaitGroup, arg
 	l := r.Logger()
 	h := handler.New(r)
 
-	var handler http.Handler = h
-
 	server := graceful.WithDefaults(&http.Server{
 		Addr:    s.PublicListenOn(),
-		Handler: handler,
+		Handler: h,
 	})
 
 	if s.Serve.StartupMessage {

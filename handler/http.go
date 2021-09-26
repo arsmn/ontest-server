@@ -36,6 +36,9 @@ func New(dx handlerDependencies) *Handler {
 
 	root := chi.NewRouter()
 
+	root.NotFound(h.notFound)
+	root.MethodNotAllowed(h.methodNotAllowed)
+
 	root.Use(h.cors)
 
 	root.HandleFunc("/", h.root)
