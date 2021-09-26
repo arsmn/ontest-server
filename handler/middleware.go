@@ -2,10 +2,22 @@ package handler
 
 import (
 	stderr "errors"
+	"net/http"
 
 	"github.com/arsmn/ontest-server/module/errors"
 	"github.com/arsmn/ontest-server/persistence"
+	"github.com/rs/cors"
 )
+
+func (h *Handler) cors(hh http.Handler) http.Handler {
+	return cors.New(cors.Options{
+		AllowedOrigins:   h.dx.Settings().CORS.AllowedOrigins,
+		AllowedMethods:   h.dx.Settings().CORS.AllowedMethods,
+		AllowedHeaders:   h.dx.Settings().CORS.AllowedHeaders,
+		AllowCredentials: h.dx.Settings().CORS.AllowCredentials,
+		Debug:            !h.dx.Settings().IsProduction(),
+	}).Handler(hh)
+}
 
 func (h *Handler) withUser(fn HandleFunc) HandleFunc {
 	return func(ctx *Context) error {

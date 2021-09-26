@@ -64,6 +64,12 @@ type (
 				DB       int
 			}
 		}
+		CORS struct {
+			AllowedOrigins   []string
+			AllowedMethods   []string
+			AllowedHeaders   []string
+			AllowCredentials bool
+		}
 	}
 )
 
@@ -124,6 +130,12 @@ func New(l *xlog.Logger) *Config {
 	conf.Cache.Redis.Password = viper.GetString(keyCacheRedisPassword)
 	conf.Cache.Redis.DB = viper.GetInt(keyCacheRedisDB)
 
+	// CORS
+	conf.CORS.AllowedOrigins = viper.GetStringSlice(keyCORSAllowedOrigins)
+	conf.CORS.AllowedMethods = viper.GetStringSlice(keyCORSAllowedMethods)
+	conf.CORS.AllowedHeaders = viper.GetStringSlice(keyCORSAllowedHeaders)
+	conf.CORS.AllowCredentials = viper.GetBool(keyCORSAllowCredenials)
+
 	return conf
 }
 
@@ -140,8 +152,20 @@ func (c *Config) listenOn(key string) string {
 	return fmt.Sprintf("%s:%d", viper.GetString("serve."+key+".host"), port)
 }
 
-func (c *Config) IsProd() bool {
-	return c.Mode == "prod"
+func (c *Config) IsMode(mode string) bool {
+	return c.Mode == mode
+}
+
+func (c *Config) IsProduction() bool {
+	return c.IsMode("production")
+}
+
+func (c *Config) IsStaging() bool {
+	return c.IsMode("staging")
+}
+
+func (c *Config) IsDevelopment() bool {
+	return c.IsMode("development")
 }
 
 func Domain() string {

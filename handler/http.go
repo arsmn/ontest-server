@@ -8,7 +8,6 @@ import (
 	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/settings"
-	"github.com/rs/cors"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -33,24 +32,11 @@ type (
 
 func New(dx handlerDependencies) *Handler {
 	h := new(Handler)
-
 	h.dx = dx
 
 	root := chi.NewRouter()
 
-	root.Use(cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:5004"},
-		AllowedMethods: []string{
-			http.MethodHead,
-			http.MethodGet,
-			http.MethodPost,
-			http.MethodPut,
-			http.MethodPatch,
-			http.MethodDelete,
-		},
-		AllowedHeaders:   []string{"Origin", "Accept", "Content-Type", "X-Requested-With"},
-		AllowCredentials: true,
-	}).Handler)
+	root.Use(h.cors)
 
 	root.Route("/auth", h.authRouter)
 	root.Route("/oauth", h.oauthHandler)

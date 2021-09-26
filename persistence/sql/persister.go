@@ -70,7 +70,7 @@ func NewPersister(dx persisterDependencies) (*Persister, error) {
 			engine.SetConnMaxLifetime(connMaxLifetime)
 			engine.SetMaxOpenConns(maxOpenConns)
 			engine.SetMaxIdleConns(maxIdleConns)
-			engine.ShowSQL(!dx.Settings().IsProd())
+			engine.ShowSQL(!dx.Settings().IsProduction())
 
 			p.dx = dx
 			p.engine = engine

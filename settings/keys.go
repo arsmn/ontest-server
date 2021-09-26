@@ -37,4 +37,8 @@ const (
 	keyCacheRedisDSN                 = "cache.redis.dsn"
 	keyCacheRedisPassword            = "cache.redis.password"
 	keyCacheRedisDB                  = "cache.redis.db"
+	keyCORSAllowedOrigins            = "cors.allowed_origins"
+	keyCORSAllowedMethods            = "cors.allowed_methods"
+	keyCORSAllowedHeaders            = "cors.allowed_headers"
+	keyCORSAllowCredenials           = "cors.allow_credentials"
 )
