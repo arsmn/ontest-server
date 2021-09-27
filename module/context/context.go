@@ -58,3 +58,11 @@ func (ctx *Context) Token() string {
 func (ctx *Context) Signed() bool {
 	return ctx.user != nil && ctx.sess != nil
 }
+
+func (ctx *Context) IP() string {
+	forwarded := ctx.request.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return ctx.request.RemoteAddr
+}

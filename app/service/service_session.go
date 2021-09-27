@@ -6,6 +6,7 @@ import (
 
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/errors"
+	"github.com/arsmn/ontest-server/module/httplib"
 	v "github.com/arsmn/ontest-server/module/validation"
 	"github.com/arsmn/ontest-server/persistence"
 	"github.com/arsmn/ontest-server/session"
@@ -16,22 +17,6 @@ var _ app.App = new(Service)
 
 func (s *Service) GetSession(ctx context.Context, token string) (*session.Session, error) {
 	return s.dx.Persister().FindSessionByToken(ctx, token)
-}
-
-func (s *Service) DeleteSession(ctx context.Context, token string) error {
-	sess, err := s.dx.Persister().FindSessionByToken(ctx, token)
-	if err != nil {
-		if stderr.Is(err, persistence.ErrNoRows) {
-			return errors.ErrUnauthorized
-		}
-		return err
-	}
-
-	if !sess.IsActive() {
-		return errors.ErrUnauthorized
-	}
-
-	return s.dx.Persister().RemoveSession(ctx, sess.ID)
 }
 
 func (s *Service) IssueSession(ctx context.Context, req *session.SigninRequest) (*session.Session, error) {
@@ -77,6 +62,18 @@ func (s *Service) IssueSession(ctx context.Context, req *session.SigninRequest) 
 
 	sess := session.NewActiveSession(user.ID, s.dx.Settings().Session.Lifespan)
 
+	if len(req.IP) != 0 {
+		ipl, err := s.dx.IP2Location().FetchData(ctx, req.IP)
+		if err == nil {
+			sess.SetIPLocation(ipl)
+		}
+	}
+
+	if len(req.UserAgent) != 0 {
+		uai := httplib.ParseUserAgent(req.UserAgent)
+		sess.SetUAInfo(uai)
+	}
+
 	if err := s.dx.Persister().CreateSession(ctx, sess); err != nil {
 		return nil, err
 	}
@@ -109,9 +106,68 @@ func (s *Service) OAuthIssueSession(ctx context.Context, req *session.OAuthSignR
 
 	sess := session.NewActiveSession(u.ID, s.dx.Settings().Session.Lifespan)
 
+	if len(req.IP) != 0 {
+		ipl, err := s.dx.IP2Location().FetchData(ctx, req.IP)
+		if err == nil {
+			sess.SetIPLocation(ipl)
+		}
+	}
+
+	if len(req.UserAgent) != 0 {
+		uai := httplib.ParseUserAgent(req.UserAgent)
+		sess.SetUAInfo(uai)
+	}
+
 	if err := s.dx.Persister().CreateSession(ctx, sess); err != nil {
 		return nil, err
 	}
 
 	return sess, nil
+}
+
+func (s *Service) GetUserActiveSessions(ctx context.Context, req *session.GetUserActiveSessionsRequest) (*session.GetUserActiveSessionsResponse, error) {
+	if err := v.Validate(req); err != nil {
+		return nil, err
+	}
+
+	sessions, err := s.dx.Persister().FindUserSessions(ctx, req.SignedUser().ID)
+	if err != nil {
+		return nil, err
+	}
+
+	response := new(session.GetUserActiveSessionsResponse)
+	for _, sess := range sessions {
+		if sess.Token == req.Token() {
+			response.Current = sess
+		} else {
+			response.Others = append(response.Others, sess)
+		}
+	}
+
+	return response, nil
+}
+
+func (s *Service) deleteSession(ctx context.Context, sess *session.Session, u *user.User, err error) error {
+	if err != nil {
+		if stderr.Is(err, persistence.ErrNoRows) {
+			return errors.ErrUnauthorized
+		}
+		return err
+	}
+
+	if sess.UserID != u.ID || !sess.IsActive() {
+		return errors.ErrUnauthorized
+	}
+
+	return s.dx.Persister().RemoveSession(ctx, sess.ID)
+}
+
+func (s *Service) DeleteSessionByToken(ctx context.Context, req *session.DeleteSessionByTokenRequest) error {
+	sess, err := s.dx.Persister().FindSessionByToken(ctx, req.Token)
+	return s.deleteSession(ctx, sess, req.SignedUser(), err)
+}
+
+func (s *Service) DeleteSession(ctx context.Context, req *session.DeleteSessionRequest) error {
+	sess, err := s.dx.Persister().FindSession(ctx, req.ID)
+	return s.deleteSession(ctx, sess, req.SignedUser(), err)
 }

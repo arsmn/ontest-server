@@ -71,6 +71,11 @@ type (
 			AllowedHeaders   []string
 			AllowCredentials bool
 		}
+		External struct {
+			IPGeoLocation struct {
+				APIKey string
+			}
+		}
 	}
 )
 
@@ -137,6 +142,9 @@ func New(l *xlog.Logger) *Config {
 	conf.CORS.AllowedMethods = viper.GetStringSlice(keyCORSAllowedMethods)
 	conf.CORS.AllowedHeaders = viper.GetStringSlice(keyCORSAllowedHeaders)
 	conf.CORS.AllowCredentials = viper.GetBool(keyCORSAllowCredenials)
+
+	// ExternalAPI
+	conf.External.IPGeoLocation.APIKey = viper.GetString(keyExternalIPGeoLocationAPIKey)
 
 	return conf
 }

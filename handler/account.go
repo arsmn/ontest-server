@@ -5,12 +5,14 @@ import (
 	stderr "errors"
 	"image"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/arsmn/ontest-server/module/avatar"
 	"github.com/arsmn/ontest-server/module/errors"
 	"github.com/arsmn/ontest-server/module/storage"
 	"github.com/arsmn/ontest-server/persistence"
+	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/user"
 	"github.com/go-chi/chi/v5"
 )
@@ -26,6 +28,8 @@ func (h *Handler) accountRouter(r chi.Router) {
 	r.Post("/avatar", h.clown(h.setAvatar, h.withAuth))
 	r.Delete("/avatar", h.clown(h.deleteAvatar, h.withAuth))
 	r.Post("/set-preference", h.clown(h.setPreference, h.withAuth))
+	r.Get("/sessions", h.clown(h.sessions, h.withAuth))
+	r.Delete("/session/{id}", h.clown(h.terminate, h.withAuth))
 }
 
 func (h *Handler) updateProfile(ctx *Context) error {
@@ -200,6 +204,36 @@ func (h *Handler) setPreference(ctx *Context) error {
 
 	req.WithUser(ctx.User())
 	err := h.dx.App().SetPreference(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(success)
+}
+
+func (h *Handler) sessions(ctx *Context) error {
+	req := new(session.GetUserActiveSessionsRequest)
+	req.WithUser(ctx.User()).WithToken(ctx.Token())
+
+	res, err := h.dx.App().GetUserActiveSessions(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(payload(res))
+}
+
+func (h *Handler) terminate(ctx *Context) error {
+	req := new(session.DeleteSessionRequest)
+
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 0)
+	if err != nil {
+		return errors.ErrBadRequest
+	}
+
+	req.ID = id
+	req.WithUser(ctx.User()).WithToken(ctx.Token())
+	err = h.dx.App().DeleteSession(ctx.Context(), req)
 	if err != nil {
 		return err
 	}

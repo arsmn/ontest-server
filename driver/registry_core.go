@@ -7,6 +7,7 @@ import (
 	"github.com/arsmn/ontest-server/app/service"
 	"github.com/arsmn/ontest-server/module/cache"
 	"github.com/arsmn/ontest-server/module/hash"
+	"github.com/arsmn/ontest-server/module/httplib/ip"
 	"github.com/arsmn/ontest-server/module/mail"
 	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/module/xlog"
@@ -24,6 +25,7 @@ type RegistryCore struct {
 	cacher         cache.Cacher
 	passwordHasher hash.Hasher
 	mailer         mail.Mailer
+	ip2location    ip.IP2Location
 
 	googleOAuth   oauth.OAuther
 	githubOAuth   oauth.OAuther
@@ -48,6 +50,7 @@ func (r *RegistryCore) Init(ctx context.Context) (err error) {
 	r.app = service.NewAppService(r)
 	r.cacher = cache.NewCacherRedis(r)
 	r.passwordHasher = hash.NewHasherArgon2(r)
+	r.ip2location = ip.NewIP2LocationGeo(r)
 
 	r.googleOAuth = oauth.NewOAutherGoogle(r)
 	r.githubOAuth = oauth.NewOAutherGitHub(r)
@@ -92,6 +95,10 @@ func (r *RegistryCore) Hasher() hash.Hasher {
 
 func (r *RegistryCore) Mailer() mail.Mailer {
 	return r.mailer
+}
+
+func (r *RegistryCore) IP2Location() ip.IP2Location {
+	return r.ip2location
 }
 
 func (r *RegistryCore) OAuther(typ oauth.OAuthProviderType) oauth.OAuther {

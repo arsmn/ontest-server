@@ -44,3 +44,13 @@ func (p *Persister) RemoveUserSessions(_ context.Context, uid uint64, tokens ...
 	_, err := p.engine.Where("user_id = ?", uid).And(builder.NotIn("token", tokens)).Delete(new(session.Session))
 	return err
 }
+
+func (p *Persister) FindUserSessions(_ context.Context, uid uint64) ([]*session.Session, error) {
+	sessions := make([]*session.Session, 0)
+	if err := p.engine.
+		Where("user_id = ?", uid).
+		Find(&sessions); err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}

@@ -4,6 +4,7 @@ import (
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/cache"
 	"github.com/arsmn/ontest-server/module/hash"
+	"github.com/arsmn/ontest-server/module/httplib/ip"
 	"github.com/arsmn/ontest-server/module/mail"
 	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/persistence"
@@ -20,6 +21,7 @@ type (
 		cache.Provider
 		hash.Provider
 		mail.Provider
+		ip.Provider
 	}
 	Service struct {
 		dx serviceDependencies

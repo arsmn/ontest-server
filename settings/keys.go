@@ -42,4 +42,5 @@ const (
 	keyCORSAllowedMethods            = "cors.allowed_methods"
 	keyCORSAllowedHeaders            = "cors.allowed_headers"
 	keyCORSAllowCredenials           = "cors.allow_credentials"
+	keyExternalIPGeoLocationAPIKey   = "external.ipgeolocation.api_key"
 )

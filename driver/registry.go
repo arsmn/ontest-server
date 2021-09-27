@@ -6,6 +6,7 @@ import (
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/cache"
 	"github.com/arsmn/ontest-server/module/hash"
+	"github.com/arsmn/ontest-server/module/httplib/ip"
 	"github.com/arsmn/ontest-server/module/mail"
 	"github.com/arsmn/ontest-server/module/oauth"
 	"github.com/arsmn/ontest-server/module/xlog"
@@ -26,4 +27,5 @@ type Registry interface {
 	oauth.Provider
 	cache.Provider
 	mail.Provider
+	ip.Provider
 }

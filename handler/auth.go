@@ -20,6 +20,9 @@ func (h *Handler) signin(ctx *Context) error {
 		return err
 	}
 
+	req.IP = ctx.IP()
+	req.UserAgent = ctx.Request().UserAgent()
+
 	res, err := h.dx.App().IssueSession(ctx.Context(), req)
 	if err != nil {
 		return err
@@ -51,18 +54,17 @@ func (h *Handler) signup(ctx *Context) error {
 }
 
 func (h *Handler) signout(ctx *Context) error {
-	c := h.dx.Settings().Session.Cookie
-	token, err := ctx.Cookie(c)
-	if err != nil {
-		return err
-	}
+	req := new(session.DeleteSessionByTokenRequest)
 
-	err = h.dx.App().DeleteSession(ctx.Context(), token)
+	req.Token = ctx.Token()
+	req.WithUser(ctx.User()).WithToken(ctx.Token())
+	err := h.dx.App().DeleteSessionByToken(ctx.Context(), req)
 	if err != nil {
 		return err
 	}
 
 	ctx.RemoveCookie(h.dx.Settings().Session.Cookie)
+
 	return ctx.OK(success)
 }
 
