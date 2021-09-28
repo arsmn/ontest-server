@@ -57,7 +57,7 @@ func (u *User) PasswordSet() bool {
 
 func (u *User) Fs() afero.Fs {
 	if u.fs == nil {
-		path := filepath.Join("files", strconv.FormatUint(u.ID, 10))
+		path := filepath.Join("files", "users", strconv.FormatUint(u.ID, 10))
 		u.fs = afero.NewBasePathFs(afero.NewOsFs(), path)
 	}
 	return u.fs
@@ -68,7 +68,7 @@ func (u *User) Avatar() string {
 	if !ok || err != nil {
 		return ""
 	}
-	return fmt.Sprintf("%s/files/%d/avatar", settings.APIURL(), u.ID)
+	return fmt.Sprintf("%s/files/users/%d/avatar", settings.APIURL(), u.ID)
 }
 
 func (u *User) SetPreference(key, value string) *User {
