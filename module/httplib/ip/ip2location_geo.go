@@ -44,7 +44,7 @@ func (g *Geo) FetchData(ctx context.Context, ip string) (*IPLocation, error) {
 	q.Set("ip", ip)
 	q.Set("apiKey", g.dx.Settings().External.IPGeoLocation.APIKey)
 
-	resp, err := g.client.Get("https://api.ipgeolocation.io/ipgeo" + q.Encode())
+	resp, err := g.client.Get("https://api.ipgeolocation.io/ipgeo?" + q.Encode())
 	if err != nil {
 		return nil, err
 	}

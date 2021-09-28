@@ -58,7 +58,9 @@ spec:
     - name: ONTEST_CORS_ALLOWED_HEADERS
       value: Origin Accept Content-Type X-Requested-With
     - name: ONTEST_CORS_ALLOW_CREDENTIALS
-      value: true  
+      value: true
+    - name: ONTEST_EXTERNAL_IPGEOLOCATION_API_KEY
+      secret: ipgeolocationapikey
 
   image: 'ontest-server:${TAG}'
   image_pull_policy: IfNotPresent

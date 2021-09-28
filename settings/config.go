@@ -143,7 +143,7 @@ func New(l *xlog.Logger) *Config {
 	conf.CORS.AllowedHeaders = viper.GetStringSlice(keyCORSAllowedHeaders)
 	conf.CORS.AllowCredentials = viper.GetBool(keyCORSAllowCredenials)
 
-	// ExternalAPI
+	// External
 	conf.External.IPGeoLocation.APIKey = viper.GetString(keyExternalIPGeoLocationAPIKey)
 
 	return conf

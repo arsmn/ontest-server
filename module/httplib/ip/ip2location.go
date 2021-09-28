@@ -9,7 +9,6 @@ type IPLocation struct {
 	City        string `json:"city,omitempty"`
 	Latitude    string `json:"latitude,omitempty"`
 	Longitude   string `json:"longitude,omitempty"`
-	TimeZone    string `json:"time_zone,omitempty"`
 	ISP         string `json:"isp,omitempty"`
 	CountryFlag string `json:"country_flag,omitempty"`
 }
