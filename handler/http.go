@@ -43,6 +43,7 @@ func New(dx handlerDependencies) *Handler {
 
 	root.HandleFunc("/", h.root)
 	root.Route("/auth", h.authRouter)
+	root.Route("/exam", h.examRouter)
 	root.Route("/oauth", h.oauthHandler)
 	root.Route("/account", h.accountRouter)
 

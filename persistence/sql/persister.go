@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/arsmn/ontest-server/exam"
 	"github.com/arsmn/ontest-server/module/sqlcon"
 	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/persistence"
@@ -21,6 +22,7 @@ var _ persistence.Persister = new(Persister)
 var tables = []interface{}{
 	new(user.User),
 	new(session.Session),
+	new(exam.Exam),
 }
 
 type (
