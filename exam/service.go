@@ -7,5 +7,7 @@ type ServiceProvider interface {
 }
 
 type Service interface {
+	GetExam(context.Context, uint64) (*Exam, error)
 	CreateExam(context.Context, *CreateExamRequest) (*Exam, error)
+	UpdateExam(context.Context, *UpdateExamRequest) error
 }

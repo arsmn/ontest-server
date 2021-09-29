@@ -3,6 +3,7 @@ package handler
 import (
 	stderr "errors"
 	"net/http"
+	"strconv"
 
 	"github.com/arsmn/ontest-server/module/errors"
 	"github.com/arsmn/ontest-server/persistence"
@@ -72,4 +73,48 @@ func (h *Handler) fetchAuth(ctx *Context) error {
 	ctx.WithUser(u).WithSession(sess)
 
 	return nil
+}
+
+func (h *Handler) withExam(fn HandleFunc) HandleFunc {
+	return func(ctx *Context) error {
+		id := ctx.Param("id")
+		if len(id) == 0 {
+			return fn(ctx)
+		}
+
+		eid, err := strconv.ParseUint(id, 10, 0)
+		if err != nil {
+			return err
+		}
+
+		exam, err := h.dx.App().GetExam(ctx.Context(), eid)
+		if err != nil {
+			if stderr.Is(err, persistence.ErrNoRows) {
+				return nil
+			}
+			return err
+		}
+
+		ctx.WithExam(exam)
+
+		return fn(ctx)
+	}
+}
+
+func (h *Handler) withOwner(fn HandleFunc) HandleFunc {
+	return func(ctx *Context) error {
+		if !ctx.Signed() {
+			return errors.ErrUnauthorized
+		}
+
+		if ctx.Exam() == nil {
+			return errors.ErrForbidden
+		}
+
+		if ctx.Exam().Examiner != ctx.User().ID {
+			return errors.ErrForbidden
+		}
+
+		return fn(ctx)
+	}
 }

@@ -9,4 +9,5 @@ type PersistenceProvider interface {
 type Persister interface {
 	FindExam(context.Context, uint64) (*Exam, error)
 	CreateExam(context.Context, *Exam) error
+	UpdateExam(context.Context, *Exam, ...string) error
 }

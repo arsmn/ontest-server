@@ -193,7 +193,7 @@ func (h *Handler) deleteAvatar(ctx *Context) error {
 		return err
 	}
 
-	return ctx.OK(payload(ctx.User().Map()))
+	return ctx.OK(success)
 }
 
 func (h *Handler) setPreference(ctx *Context) error {

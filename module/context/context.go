@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/arsmn/ontest-server/exam"
 	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/user"
 	"github.com/go-chi/chi/v5"
@@ -15,6 +16,8 @@ type Context struct {
 
 	user *user.User
 	sess *session.Session
+
+	exam *exam.Exam
 }
 
 func (ctx *Context) WithUser(u *user.User) *Context {
@@ -24,6 +27,11 @@ func (ctx *Context) WithUser(u *user.User) *Context {
 
 func (ctx *Context) WithSession(s *session.Session) *Context {
 	ctx.sess = s
+	return ctx
+}
+
+func (ctx *Context) WithExam(e *exam.Exam) *Context {
+	ctx.exam = e
 	return ctx
 }
 
@@ -49,6 +57,10 @@ func (ctx *Context) User() *user.User {
 
 func (ctx *Context) Session() *session.Session {
 	return ctx.sess
+}
+
+func (ctx *Context) Exam() *exam.Exam {
+	return ctx.exam
 }
 
 func (ctx *Context) Token() string {
