@@ -3,27 +3,12 @@ package exam
 import (
 	"time"
 
-	"github.com/arsmn/ontest-server/user"
 	v "github.com/go-ozzo/ozzo-validation/v4"
 )
-
-type ExamRequest struct {
-	e *Exam `json:"-"`
-}
-
-func (r *ExamRequest) Exam() *Exam {
-	return r.e
-}
-
-func (r *ExamRequest) WithExam(e *Exam) *ExamRequest {
-	r.e = e
-	return r
-}
 
 ///// CreateExamRequest
 
 type CreateExamRequest struct {
-	user.SignedRequest
 	Title    string     `json:"title,omitempty"`
 	StartAt  time.Time  `json:"start_at,omitempty"`
 	Once     bool       `json:"once,omitempty"`
@@ -41,8 +26,6 @@ func (r CreateExamRequest) Validate() error {
 ///// UpdateExamRequest
 
 type UpdateExamRequest struct {
-	user.SignedRequest
-	ExamRequest
 	Title        string     `json:"title,omitempty"`
 	StartAt      time.Time  `json:"start_at,omitempty"`
 	Once         bool       `json:"once,omitempty"`

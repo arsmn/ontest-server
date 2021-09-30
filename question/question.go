@@ -26,7 +26,7 @@ type Question struct {
 	ExamID        uint64        `xorm:"not null 'exam_id'" json:"exam_id,omitempty"`
 	Text          string        `xorm:"varchar(250) not null" json:"text,omitempty"`
 	Type          Type          `xorm:"not null" json:"type,omitempty"`
-	Deadline      time.Duration `xorm:"null" json:"deadline,omitempty"`
+	Duration      time.Duration `xorm:"null" json:"duration,omitempty"`
 	Score         int           `xorm:"not null" json:"score,omitempty"`
 	NegativeScore int           `xorm:"not null" json:"negative_score,omitempty"`
 

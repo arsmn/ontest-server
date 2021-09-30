@@ -5,6 +5,7 @@ import (
 
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/exam"
+	c "github.com/arsmn/ontest-server/module/context"
 	v "github.com/arsmn/ontest-server/module/validation"
 )
 
@@ -19,7 +20,9 @@ func (s *Service) CreateExam(ctx context.Context, req *exam.CreateExamRequest) (
 		return nil, err
 	}
 
-	exam := exam.NewDraftExam(req.SignedUser().ID).
+	u := c.User(ctx)
+
+	exam := exam.NewDraftExam(u.ID).
 		SetTitle(req.Title).
 		SetStartAt(req.StartAt).
 		SetDeadline(req.Deadline)
@@ -36,13 +39,14 @@ func (s *Service) UpdateExam(ctx context.Context, req *exam.UpdateExamRequest) e
 		return err
 	}
 
-	req.Exam().
-		SetTitle(req.Title).
+	e := c.Exam(ctx)
+
+	e.SetTitle(req.Title).
 		SetStartAt(req.StartAt).
 		SetDeadline(req.Deadline).
 		SetFreeMovement(req.FreeMovement)
 
-	if err := s.dx.Persister().UpdateExam(ctx, req.Exam(), "title", "start_at", "deadline", "free_movement"); err != nil {
+	if err := s.dx.Persister().UpdateExam(ctx, e, "title", "start_at", "deadline", "free_movement"); err != nil {
 		return err
 	}
 

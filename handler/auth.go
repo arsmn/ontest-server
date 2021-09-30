@@ -55,9 +55,8 @@ func (h *Handler) signup(ctx *Context) error {
 
 func (h *Handler) signout(ctx *Context) error {
 	req := new(session.DeleteSessionByTokenRequest)
+	req.Token = ctx.Session().Token
 
-	req.Token = ctx.Token()
-	req.WithUser(ctx.User()).WithToken(ctx.Token())
 	err := h.dx.App().DeleteSessionByToken(ctx.Context(), req)
 	if err != nil {
 		return err

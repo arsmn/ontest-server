@@ -8,6 +8,7 @@ import (
 
 	"github.com/arsmn/ontest-server/app"
 	"github.com/arsmn/ontest-server/module/cache"
+	c "github.com/arsmn/ontest-server/module/context"
 	"github.com/arsmn/ontest-server/module/errors"
 	"github.com/arsmn/ontest-server/module/generate"
 	v "github.com/arsmn/ontest-server/module/validation"
@@ -117,7 +118,7 @@ func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRe
 		return err
 	}
 
-	u := req.SignedUser()
+	u := c.User(ctx)
 
 	if err := s.dx.Hasher().Compare(ctx, []byte(req.CurrentPassword), []byte(u.Password)); err != nil {
 		return app.ErrInvalidCredentials
@@ -134,8 +135,10 @@ func (s *Service) ChangePassword(ctx context.Context, req *user.ChangePasswordRe
 		return err
 	}
 
+	t := c.Session(ctx).Token
+
 	if req.Terminate {
-		err = s.dx.Persister().RemoveUserSessions(ctx, u.ID, req.Token())
+		err = s.dx.Persister().RemoveUserSessions(ctx, u.ID, t)
 		if err != nil {
 			s.dx.Logger().Error("error while removing user sessions", xlog.Err(err))
 		}
@@ -149,7 +152,7 @@ func (s *Service) SetPassword(ctx context.Context, req *user.SetPasswordRequest)
 		return err
 	}
 
-	u := req.SignedUser()
+	u := c.User(ctx)
 
 	if u.PasswordSet() {
 		return nil
@@ -174,12 +177,12 @@ func (s *Service) UpdateProfile(ctx context.Context, req *user.UpdateProfileRequ
 		return err
 	}
 
-	u := req.SignedUser()
-	u.FirstName = req.FirstName
-	u.LastName = req.LastName
-	u.Username = req.Username
+	u := c.User(ctx).
+		SetFirstName(req.FirstName).
+		SetLastName(req.LastName).
+		SetUsername(req.Username)
 
-	return s.dx.Persister().UpdateUser(ctx, req.SignedUser(), "first_name", "last_name", "username")
+	return s.dx.Persister().UpdateUser(ctx, u, "first_name", "last_name", "username")
 }
 
 func (s *Service) SendVerification(ctx context.Context, req *user.SendVerificationRequest) error {
@@ -187,7 +190,7 @@ func (s *Service) SendVerification(ctx context.Context, req *user.SendVerificati
 		return err
 	}
 
-	u := req.SignedUser()
+	u := c.User(ctx)
 
 	if u.EmailVerified {
 		return nil
@@ -212,7 +215,8 @@ func (s *Service) Verify(ctx context.Context, req *user.VerificationRequest) err
 		return err
 	}
 
-	u := req.SignedUser()
+	u := c.User(ctx)
+
 	if u.EmailVerified {
 		return nil
 	}
@@ -241,7 +245,7 @@ func (s *Service) SetPreference(ctx context.Context, req *user.SetPreferenceRequ
 		return err
 	}
 
-	u := req.SignedUser().SetPreference(req.Key, req.Value)
+	u := c.User(ctx).SetPreference(req.Key, req.Value)
 
 	return s.dx.Persister().UpdateUser(ctx, u, "preferences")
 }

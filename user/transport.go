@@ -6,30 +6,6 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-///// SignedRequest
-type SignedRequest struct {
-	t string `json:"-"`
-	u *User  `json:"-"`
-}
-
-func (r *SignedRequest) WithUser(u *User) *SignedRequest {
-	r.u = u
-	return r
-}
-
-func (r *SignedRequest) WithToken(t string) *SignedRequest {
-	r.t = t
-	return r
-}
-
-func (r *SignedRequest) SignedUser() *User {
-	return r.u
-}
-
-func (r *SignedRequest) Token() string {
-	return r.t
-}
-
 ///// SignupRequest
 
 type SignupRequest struct {
@@ -77,7 +53,6 @@ func (r ResetPasswordRequest) Validate() error {
 ///// ChangePasswordRequest
 
 type ChangePasswordRequest struct {
-	SignedRequest
 	CurrentPassword string `json:"current_password,omitempty"`
 	NewPassword     string `json:"new_password,omitempty"`
 	Terminate       bool   `json:"terminate,omitempty"`
@@ -93,7 +68,6 @@ func (r ChangePasswordRequest) Validate() error {
 ///// SetPasswordRequest
 
 type SetPasswordRequest struct {
-	SignedRequest
 	Password string `json:"password,omitempty"`
 }
 
@@ -106,7 +80,6 @@ func (r SetPasswordRequest) Validate() error {
 ///// UpdateProfileRequest
 
 type UpdateProfileRequest struct {
-	SignedRequest
 	FirstName string `json:"first_name,omitempty"`
 	LastName  string `json:"last_name,omitempty"`
 	Username  string `json:"username,omitempty"`
@@ -123,13 +96,12 @@ func (r UpdateProfileRequest) Validate() error {
 ///// SendVerificationRequest
 
 type SendVerificationRequest struct {
-	SignedRequest
+	UserID uint64 `json:"-"`
 }
 
 ///// VerificationRequest
 
 type VerificationRequest struct {
-	SignedRequest
 	Code string `json:"code,omitempty"`
 }
 
@@ -142,7 +114,6 @@ func (r VerificationRequest) Validate() error {
 ///// SetPreferenceRequest
 
 type SetPreferenceRequest struct {
-	SignedRequest
 	Key   string `json:"key,omitempty"`
 	Value string `json:"value,omitempty"`
 }

@@ -38,7 +38,6 @@ func (h *Handler) updateProfile(ctx *Context) error {
 		return err
 	}
 
-	req.WithUser(ctx.User())
 	err := h.dx.App().UpdateProfile(ctx.Context(), req)
 	if err != nil {
 		return err
@@ -57,7 +56,6 @@ func (h *Handler) changePassword(ctx *Context) error {
 		return err
 	}
 
-	req.WithUser(ctx.User()).WithToken(ctx.Token())
 	err := h.dx.App().ChangePassword(ctx.Context(), req)
 	if err != nil {
 		return err
@@ -72,7 +70,6 @@ func (h *Handler) setPassword(ctx *Context) error {
 		return err
 	}
 
-	req.WithUser(ctx.User()).WithToken(ctx.Token())
 	err := h.dx.App().SetPassword(ctx.Context(), req)
 	if err != nil {
 		return err
@@ -122,7 +119,7 @@ func (h *Handler) check(ctx *Context) error {
 
 func (h *Handler) sendVerification(ctx *Context) error {
 	req := new(user.SendVerificationRequest)
-	req.WithUser(ctx.User())
+	req.UserID = ctx.User().ID
 
 	err := h.dx.App().SendVerification(ctx.Context(), req)
 	if err != nil {
@@ -137,8 +134,6 @@ func (h *Handler) verify(ctx *Context) error {
 	if err := ctx.BindJson(req); err != nil {
 		return err
 	}
-
-	req.WithUser(ctx.User())
 
 	err := h.dx.App().Verify(ctx.Context(), req)
 	if err != nil {
@@ -202,7 +197,6 @@ func (h *Handler) setPreference(ctx *Context) error {
 		return err
 	}
 
-	req.WithUser(ctx.User())
 	err := h.dx.App().SetPreference(ctx.Context(), req)
 	if err != nil {
 		return err
@@ -213,7 +207,7 @@ func (h *Handler) setPreference(ctx *Context) error {
 
 func (h *Handler) sessions(ctx *Context) error {
 	req := new(session.GetUserActiveSessionsRequest)
-	req.WithUser(ctx.User()).WithToken(ctx.Token())
+	req.UserID = ctx.User().ID
 
 	res, err := h.dx.App().GetUserActiveSessions(ctx.Context(), req)
 	if err != nil {
@@ -232,7 +226,7 @@ func (h *Handler) terminate(ctx *Context) error {
 	}
 
 	req.ID = id
-	req.WithUser(ctx.User()).WithToken(ctx.Token())
+
 	err = h.dx.App().DeleteSession(ctx.Context(), req)
 	if err != nil {
 		return err

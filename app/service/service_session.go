@@ -5,7 +5,7 @@ import (
 	stderr "errors"
 
 	"github.com/arsmn/ontest-server/app"
-	"github.com/arsmn/ontest-server/module/errors"
+	c "github.com/arsmn/ontest-server/module/context"
 	"github.com/arsmn/ontest-server/module/httplib"
 	v "github.com/arsmn/ontest-server/module/validation"
 	"github.com/arsmn/ontest-server/persistence"
@@ -130,14 +130,16 @@ func (s *Service) GetUserActiveSessions(ctx context.Context, req *session.GetUse
 		return nil, err
 	}
 
-	sessions, err := s.dx.Persister().FindUserSessions(ctx, req.SignedUser().ID)
+	sessions, err := s.dx.Persister().FindUserSessions(ctx, req.UserID)
 	if err != nil {
 		return nil, err
 	}
 
+	t := c.Session(ctx).Token
+
 	response := new(session.GetUserActiveSessionsResponse)
 	for _, sess := range sessions {
-		if sess.Token == req.Token() {
+		if sess.Token == t {
 			response.Current = sess
 		} else {
 			response.Others = append(response.Others, sess)
@@ -147,16 +149,16 @@ func (s *Service) GetUserActiveSessions(ctx context.Context, req *session.GetUse
 	return response, nil
 }
 
-func (s *Service) deleteSession(ctx context.Context, sess *session.Session, u *user.User, err error) error {
+func (s *Service) deleteSession(ctx context.Context, sess *session.Session, err error) error {
 	if err != nil {
 		if stderr.Is(err, persistence.ErrNoRows) {
-			return errors.ErrUnauthorized
+			return nil
 		}
 		return err
 	}
 
-	if sess.UserID != u.ID || !sess.IsActive() {
-		return errors.ErrUnauthorized
+	if !sess.IsActive() {
+		return nil
 	}
 
 	return s.dx.Persister().RemoveSession(ctx, sess.ID)
@@ -164,10 +166,10 @@ func (s *Service) deleteSession(ctx context.Context, sess *session.Session, u *u
 
 func (s *Service) DeleteSessionByToken(ctx context.Context, req *session.DeleteSessionByTokenRequest) error {
 	sess, err := s.dx.Persister().FindSessionByToken(ctx, req.Token)
-	return s.deleteSession(ctx, sess, req.SignedUser(), err)
+	return s.deleteSession(ctx, sess, err)
 }
 
 func (s *Service) DeleteSession(ctx context.Context, req *session.DeleteSessionRequest) error {
 	sess, err := s.dx.Persister().FindSession(ctx, req.ID)
-	return s.deleteSession(ctx, sess, req.SignedUser(), err)
+	return s.deleteSession(ctx, sess, err)
 }

@@ -1,7 +1,6 @@
 package session
 
 import (
-	"github.com/arsmn/ontest-server/user"
 	v "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
@@ -42,21 +41,19 @@ func (r OAuthSignRequest) Validate() error {
 ///// DeleteSessionRequest
 
 type DeleteSessionRequest struct {
-	user.SignedRequest
 	ID uint64 `json:"-"`
 }
 
 //// DeleteSessionByTokenRequest
 
 type DeleteSessionByTokenRequest struct {
-	user.SignedRequest
 	Token string `json:"-"`
 }
 
 ///// GetUserActiveSessionsRequest
 
 type GetUserActiveSessionsRequest struct {
-	user.SignedRequest
+	UserID uint64 `json:"-"`
 }
 
 ///// GetActiveSessionsResponse

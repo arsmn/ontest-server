@@ -16,23 +16,7 @@ type Context struct {
 
 	user *user.User
 	sess *session.Session
-
 	exam *exam.Exam
-}
-
-func (ctx *Context) WithUser(u *user.User) *Context {
-	ctx.user = u
-	return ctx
-}
-
-func (ctx *Context) WithSession(s *session.Session) *Context {
-	ctx.sess = s
-	return ctx
-}
-
-func (ctx *Context) WithExam(e *exam.Exam) *Context {
-	ctx.exam = e
-	return ctx
 }
 
 func (ctx *Context) Request() *http.Request {
@@ -51,30 +35,47 @@ func (ctx *Context) Param(p string) string {
 	return chi.URLParam(ctx.request, p)
 }
 
-func (ctx *Context) User() *user.User {
-	return ctx.user
-}
-
-func (ctx *Context) Session() *session.Session {
-	return ctx.sess
-}
-
-func (ctx *Context) Exam() *exam.Exam {
-	return ctx.exam
-}
-
-func (ctx *Context) Token() string {
-	return ctx.sess.Token
-}
-
-func (ctx *Context) Signed() bool {
-	return ctx.user != nil && ctx.sess != nil
-}
-
 func (ctx *Context) IP() string {
 	forwarded := ctx.request.Header.Get("X-FORWARDED-FOR")
 	if forwarded != "" {
 		return forwarded
 	}
 	return ctx.request.RemoteAddr
+}
+
+func (ctx *Context) Signed() bool {
+	return ctx.user != nil && ctx.sess != nil
+}
+
+func (ctx *Context) WithUser(u *user.User) *Context {
+	ctx.user = u
+	c := context.WithValue(ctx.request.Context(), userKey, u)
+	ctx.request = ctx.request.WithContext(c)
+	return ctx
+}
+
+func (ctx *Context) User() *user.User {
+	return ctx.user
+}
+
+func (ctx *Context) WithSession(s *session.Session) *Context {
+	ctx.sess = s
+	c := context.WithValue(ctx.request.Context(), sessionKey, s)
+	ctx.request = ctx.request.WithContext(c)
+	return ctx
+}
+
+func (ctx *Context) Session() *session.Session {
+	return ctx.sess
+}
+
+func (ctx *Context) WithExam(e *exam.Exam) *Context {
+	ctx.exam = e
+	c := context.WithValue(ctx.request.Context(), examKey, e)
+	ctx.request = ctx.request.WithContext(c)
+	return ctx
+}
+
+func (ctx *Context) Exam() *exam.Exam {
+	return ctx.exam
 }

@@ -71,6 +71,21 @@ func (u *User) Avatar() string {
 	return fmt.Sprintf("%s/files/users/%d/avatar", settings.APIURL(), u.ID)
 }
 
+func (u *User) SetFirstName(fn string) *User {
+	u.FirstName = fn
+	return u
+}
+
+func (u *User) SetLastName(ln string) *User {
+	u.LastName = ln
+	return u
+}
+
+func (u *User) SetUsername(un string) *User {
+	u.Username = un
+	return u
+}
+
 func (u *User) SetPreference(key, value string) *User {
 	if u.Preferences == nil {
 		u.Preferences = make(map[string]string)

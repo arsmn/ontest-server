@@ -30,7 +30,6 @@ func (h *Handler) createExam(ctx *Context) error {
 		return err
 	}
 
-	req.WithUser(ctx.User())
 	exam, err := h.dx.App().CreateExam(ctx.Context(), req)
 	if err != nil {
 		return err
@@ -45,8 +44,6 @@ func (h *Handler) updateExam(ctx *Context) error {
 		return err
 	}
 
-	req.WithUser(ctx.User())
-	req.WithExam(ctx.Exam())
 	err := h.dx.App().UpdateExam(ctx.Context(), req)
 	if err != nil {
 		return err
