@@ -35,8 +35,9 @@ func (s *Service) CreateQuestion(ctx context.Context, req *question.CreateQuesti
 	}
 
 	u := c.User(ctx)
+	e := c.Exam(ctx)
 
-	q := question.NewQuestion(u.ID, req.ExamID, req.Text).
+	q := question.NewQuestion(u.ID, e.ID, req.Text).
 		SetType(req.Type).
 		SetScore(req.Score).
 		SetNegativeScore(req.NegativeScore).
@@ -55,7 +56,7 @@ func (s *Service) CreateQuestion(ctx context.Context, req *question.CreateQuesti
 	return q, nil
 }
 
-func (s *Service) UpdateQuestion(ctx context.Context, req *question.UpdateQuestionRequest) error {
+func (s *Service) UpdateQuestion(ctx context.Context, req *question.CreateQuestionRequest) error {
 	if err := v.Validate(req); err != nil {
 		return err
 	}

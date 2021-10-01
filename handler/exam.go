@@ -116,8 +116,6 @@ func (h *Handler) createQuestion(ctx *Context) error {
 		return err
 	}
 
-	req.ExamID = ctx.Exam().ID
-
 	res, err := h.dx.App().CreateQuestion(ctx.Context(), req)
 	if err != nil {
 		return err
@@ -127,8 +125,10 @@ func (h *Handler) createQuestion(ctx *Context) error {
 }
 
 func (h *Handler) updateQuestion(ctx *Context) error {
-	req := new(question.UpdateQuestionRequest)
-	req.QuestionID = ctx.Question().ID
+	req := new(question.CreateQuestionRequest)
+	if err := ctx.BindJson(req); err != nil {
+		return err
+	}
 
 	err := h.dx.App().UpdateQuestion(ctx.Context(), req)
 	if err != nil {

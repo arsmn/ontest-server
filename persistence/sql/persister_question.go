@@ -52,8 +52,10 @@ func (p *Persister) CreateQuestion(_ context.Context, q *question.Question) erro
 		return err
 	}
 
-	if _, err := sess.Insert(q.Options); err != nil {
-		return err
+	if len(q.Options) > 0 {
+		if _, err := sess.Insert(q.Options); err != nil {
+			return err
+		}
 	}
 
 	return sess.Commit()
@@ -71,8 +73,10 @@ func (p *Persister) UpdateQuestion(_ context.Context, q *question.Question, fiel
 		return err
 	}
 
-	if _, err := sess.Insert(q.Options); err != nil {
-		return err
+	if len(q.Options) > 0 {
+		if _, err := sess.Insert(q.Options); err != nil {
+			return err
+		}
 	}
 
 	if _, err := p.engine.ID(q.ID).Cols(fields...).Update(q); err != nil {

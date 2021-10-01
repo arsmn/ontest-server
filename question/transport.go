@@ -22,49 +22,33 @@ type GetQuestionListResponse struct {
 ///// CreateQuestionRequest
 
 type CreateQuestionRequest struct {
-	ExamID        uint64 `json:"-"`
-	Text          string `json:"text,omitempty"`
-	Type          Type   `json:"type,omitempty"`
-	Duration      int64  `json:"duration,omitempty"`
-	Score         int    `json:"score,omitempty"`
-	NegativeScore int    `json:"negative_score,omitempty"`
-	Options       []struct {
-		Text   string `json:"text,omitempty"`
-		Answer bool   `json:"answer,omitempty"`
-	} `json:"options,omitempty"`
+	Text          string                 `json:"text,omitempty"`
+	Type          Type                   `json:"type,omitempty"`
+	Duration      int64                  `json:"duration,omitempty"`
+	Score         int                    `json:"score,omitempty"`
+	NegativeScore int                    `json:"negative_score,omitempty"`
+	Options       []*CreateOptionRequest `json:"options,omitempty"`
 }
 
 func (r CreateQuestionRequest) Validate() error {
 	return v.ValidateStruct(&r,
 		v.Field(&r.Text, v.Required, v.Length(1, 250)),
-		v.Field(&r.Score, v.Required, v.Min(0)),
-		v.Field(&r.NegativeScore, v.Required, v.Min(0)),
+		v.Field(&r.Score, v.Required, v.Min(0), v.Max(100)),
+		v.Field(&r.NegativeScore, v.Min(0), v.Max(100)),
+		v.Field(&r.Options, v.Each(v.Required)),
 		v.Field(&r.Options, v.When(r.Type == SingleChoice ||
 			r.Type == MultipleChoice, v.Length(2, 10))),
 	)
 }
 
-///// UpdateQuestionRequest
-
-type UpdateQuestionRequest struct {
-	QuestionID    uint64 `json:"-"`
-	Text          string `json:"text,omitempty"`
-	Type          Type   `json:"type,omitempty"`
-	Duration      int64  `json:"duration,omitempty"`
-	Score         int    `json:"score,omitempty"`
-	NegativeScore int    `json:"negative_score,omitempty"`
-	Options       []struct {
-		Text   string `json:"text,omitempty"`
-		Answer bool   `json:"answer,omitempty"`
-	} `json:"options,omitempty"`
+///// CreateOptionRequest
+type CreateOptionRequest struct {
+	Text   string `json:"text,omitempty"`
+	Answer bool   `json:"answer,omitempty"`
 }
 
-func (r UpdateQuestionRequest) Validate() error {
+func (r CreateOptionRequest) Validate() error {
 	return v.ValidateStruct(&r,
 		v.Field(&r.Text, v.Required, v.Length(1, 250)),
-		v.Field(&r.Score, v.Required, v.Min(0)),
-		v.Field(&r.NegativeScore, v.Required, v.Min(0)),
-		v.Field(&r.Options, v.When(r.Type == SingleChoice ||
-			r.Type == MultipleChoice, v.Length(2, 10))),
 	)
 }
