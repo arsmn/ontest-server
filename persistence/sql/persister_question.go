@@ -85,3 +85,22 @@ func (p *Persister) UpdateQuestion(_ context.Context, q *question.Question, fiel
 
 	return sess.Commit()
 }
+
+func (p *Persister) RemoveQuestion(_ context.Context, id uint64) error {
+	sess := p.engine.NewSession()
+	defer sess.Close()
+
+	if err := sess.Begin(); err != nil {
+		return err
+	}
+
+	if _, err := sess.ID(id).Delete(new(question.Question)); err != nil {
+		return err
+	}
+
+	if _, err := sess.Where("question_id = ?", id).Delete(new(question.Option)); err != nil {
+		return err
+	}
+
+	return sess.Commit()
+}

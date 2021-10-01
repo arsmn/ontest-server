@@ -11,4 +11,5 @@ type Service interface {
 	GetQuestionList(context.Context, *GetQuestionListRequest) (*GetQuestionListResponse, error)
 	CreateQuestion(context.Context, *CreateQuestionRequest) (*Question, error)
 	UpdateQuestion(context.Context, *CreateQuestionRequest) error
+	DeleteQuestion(context.Context, uint64) error
 }

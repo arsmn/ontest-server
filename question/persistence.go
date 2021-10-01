@@ -11,4 +11,5 @@ type Persister interface {
 	FindListQuestions(ctx context.Context, eid uint64, page, pageSize int) (int64, []*Question, error)
 	CreateQuestion(context.Context, *Question) error
 	UpdateQuestion(context.Context, *Question, ...string) error
+	RemoveQuestion(context.Context, uint64) error
 }

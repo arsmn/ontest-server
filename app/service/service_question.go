@@ -81,3 +81,7 @@ func (s *Service) UpdateQuestion(ctx context.Context, req *question.CreateQuesti
 
 	return s.dx.Persister().UpdateQuestion(ctx, q, "text", "type", "score", "negative_score", "duration")
 }
+
+func (s *Service) DeleteQuestion(ctx context.Context, id uint64) error {
+	return s.dx.Persister().RemoveQuestion(ctx, id)
+}

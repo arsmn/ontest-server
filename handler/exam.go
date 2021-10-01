@@ -23,6 +23,7 @@ func (h *Handler) examRouter(r chi.Router) {
 	r.Get("/{id}/questions", h.clown(h.getQuestions, h.withAuth, h.withExam, h.withExamOwner))
 	r.Post("/{id}/question", h.clown(h.createQuestion, h.withAuth, h.withExam, h.withExamOwner))
 	r.Put("/{id}/question/{qid}", h.clown(h.updateQuestion, h.withAuth, h.withExam, h.withExamOwner, h.withQuestion, h.withQuestionOwner))
+	r.Delete("/{id}/question/{qid}", h.clown(h.deleteQuestion, h.withAuth, h.withExam, h.withExamOwner, h.withQuestion, h.withQuestionOwner))
 }
 
 func (h *Handler) getExam(ctx *Context) error {
@@ -131,6 +132,15 @@ func (h *Handler) updateQuestion(ctx *Context) error {
 	}
 
 	err := h.dx.App().UpdateQuestion(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(success)
+}
+
+func (h *Handler) deleteQuestion(ctx *Context) error {
+	err := h.dx.App().DeleteQuestion(ctx.Context(), ctx.Question().ID)
 	if err != nil {
 		return err
 	}
