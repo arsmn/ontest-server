@@ -8,6 +8,7 @@ import (
 	"github.com/arsmn/ontest-server/module/sqlcon"
 	"github.com/arsmn/ontest-server/module/xlog"
 	"github.com/arsmn/ontest-server/persistence"
+	"github.com/arsmn/ontest-server/question"
 	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/settings"
 	"github.com/arsmn/ontest-server/user"
@@ -23,6 +24,8 @@ var tables = []interface{}{
 	new(user.User),
 	new(session.Session),
 	new(exam.Exam),
+	new(question.Question),
+	new(question.Option),
 }
 
 type (
@@ -83,4 +86,8 @@ func NewPersister(dx persisterDependencies) (*Persister, error) {
 
 func (p *Persister) Close(ctx context.Context) error {
 	return p.engine.Close()
+}
+
+func (p *Persister) setSessionPagination(sess *xorm.Session, page, pageSize int) *xorm.Session {
+	return sess.Limit(pageSize, (page-1)*pageSize)
 }

@@ -1,6 +1,7 @@
 package httplib
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/mssola/user_agent"
@@ -34,4 +35,12 @@ func ParseUserAgent(uas string) *UAInfo {
 	info.ClientVersion = bVersion
 
 	return &info
+}
+
+func FetchIP(r *http.Request) string {
+	forwarded := r.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return r.RemoteAddr
 }

@@ -11,8 +11,6 @@ type SigninRequest struct {
 	Identifier string `json:"identifier,omitempty"`
 	Password   string `json:"password,omitempty"`
 	Remember   bool   `json:"remember,omitempty"`
-	IP         string `json:"-"`
-	UserAgent  string `json:"-"`
 }
 
 func (r SigninRequest) Validate() error {
@@ -28,8 +26,6 @@ type OAuthSignRequest struct {
 	FirstName string `json:"first_name,omitempty"`
 	LastName  string `json:"last_name,omitempty"`
 	Email     string `json:"email,omitempty"`
-	IP        string `json:"-"`
-	UserAgent string `json:"-"`
 }
 
 func (r OAuthSignRequest) Validate() error {

@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/arsmn/ontest-server/exam"
+	"github.com/arsmn/ontest-server/question"
 	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/user"
 )
@@ -14,4 +15,5 @@ type App interface {
 	user.Service
 	session.Service
 	exam.Service
+	question.Service
 }

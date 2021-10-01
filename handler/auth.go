@@ -20,9 +20,6 @@ func (h *Handler) signin(ctx *Context) error {
 		return err
 	}
 
-	req.IP = ctx.IP()
-	req.UserAgent = ctx.Request().UserAgent()
-
 	res, err := h.dx.App().IssueSession(ctx.Context(), req)
 	if err != nil {
 		return err

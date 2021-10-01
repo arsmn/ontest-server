@@ -40,6 +40,7 @@ func New(dx handlerDependencies) *Handler {
 	root.MethodNotAllowed(h.methodNotAllowed)
 
 	root.Use(h.cors)
+	root.Use(h.httpValues)
 
 	root.HandleFunc("/", h.root)
 	root.Route("/auth", h.authRouter)

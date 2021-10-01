@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/arsmn/ontest-server/exam"
+	"github.com/arsmn/ontest-server/module/httplib"
+	"github.com/arsmn/ontest-server/question"
 	"github.com/arsmn/ontest-server/session"
 	"github.com/arsmn/ontest-server/user"
 	"github.com/go-chi/chi/v5"
@@ -14,9 +16,10 @@ type Context struct {
 	request  *http.Request
 	response http.ResponseWriter
 
-	user *user.User
-	sess *session.Session
-	exam *exam.Exam
+	user     *user.User
+	sess     *session.Session
+	exam     *exam.Exam
+	question *question.Question
 }
 
 func (ctx *Context) Request() *http.Request {
@@ -36,11 +39,7 @@ func (ctx *Context) Param(p string) string {
 }
 
 func (ctx *Context) IP() string {
-	forwarded := ctx.request.Header.Get("X-FORWARDED-FOR")
-	if forwarded != "" {
-		return forwarded
-	}
-	return ctx.request.RemoteAddr
+	return httplib.FetchIP(ctx.request)
 }
 
 func (ctx *Context) Signed() bool {
@@ -78,4 +77,15 @@ func (ctx *Context) WithExam(e *exam.Exam) *Context {
 
 func (ctx *Context) Exam() *exam.Exam {
 	return ctx.exam
+}
+
+func (ctx *Context) WithQuestion(q *question.Question) *Context {
+	ctx.question = q
+	c := context.WithValue(ctx.request.Context(), questionKey, q)
+	ctx.request = ctx.request.WithContext(c)
+	return ctx
+}
+
+func (ctx *Context) Question() *question.Question {
+	return ctx.question
 }

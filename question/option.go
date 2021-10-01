@@ -1,6 +1,10 @@
 package question
 
-import "time"
+import (
+	"time"
+
+	"github.com/arsmn/ontest-server/module/generate"
+)
 
 type Option struct {
 	ID         uint64 `xorm:"pk 'id'" json:"id,omitempty"`
@@ -11,4 +15,13 @@ type Option struct {
 	CreatedAt time.Time `xorm:"created" json:"created_at,omitempty" field:"created_at"`
 	UpdatedAt time.Time `xorm:"updated" json:"updated_at,omitempty" field:"updated_at"`
 	DeletedAt time.Time `xorm:"deleted" json:"-,omitempty" field:"-"`
+}
+
+func NewOption(qid uint64, text string, answer bool) *Option {
+	return &Option{
+		ID:         generate.UID(),
+		QuestionID: qid,
+		Text:       text,
+		Answer:     answer,
+	}
 }

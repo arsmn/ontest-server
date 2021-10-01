@@ -80,5 +80,6 @@ require (
 require (
 	github.com/issue9/identicon v1.2.0 // indirect
 	github.com/mssola/user_agent v0.5.3 // indirect
+	github.com/unknwon/paginater v0.0.0-20200328080006-042474bd0eae // indirect
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 )

@@ -3,12 +3,14 @@ package handler
 import (
 	"github.com/arsmn/ontest-server/module/context"
 	"github.com/arsmn/ontest-server/module/errors"
+	"github.com/arsmn/ontest-server/shared"
 )
 
 type jsonPayload struct {
-	Success bool          `json:"success"`
-	Data    interface{}   `json:"data,omitempty"`
-	Error   *errors.Error `json:"error,omitempty"`
+	Success bool                      `json:"success"`
+	Data    interface{}               `json:"data,omitempty"`
+	Pager   *shared.PaginatedResponse `json:"pager,omitempty"`
+	Error   *errors.Error             `json:"error,omitempty"`
 }
 
 var success = &jsonPayload{Success: true}
@@ -24,5 +26,13 @@ func payload(d interface{}) *jsonPayload {
 	return &jsonPayload{
 		Success: true,
 		Data:    d,
+	}
+}
+
+func paginatedPayload(d interface{}, p shared.PaginatedResponse) *jsonPayload {
+	return &jsonPayload{
+		Success: true,
+		Data:    d,
+		Pager:   &p,
 	}
 }

@@ -76,9 +76,6 @@ func (h *Handler) handleCallback(ctx *Context, cfg oauth.OAuther) error {
 		return ctx.TemporaryRedirect("/")
 	}
 
-	req.IP = ctx.IP()
-	req.UserAgent = ctx.Request().UserAgent()
-
 	sess, err := h.dx.App().OAuthIssueSession(ctx.Request().Context(), req)
 	if err != nil {
 		return err

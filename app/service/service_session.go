@@ -60,17 +60,18 @@ func (s *Service) IssueSession(ctx context.Context, req *session.SigninRequest) 
 		return nil, app.ErrInvalidCredentials
 	}
 
+	hv := c.HTTPValues(ctx)
 	sess := session.NewActiveSession(user.ID, s.dx.Settings().Session.Lifespan)
 
-	if len(req.IP) != 0 {
-		ipl, err := s.dx.IP2Location().FetchData(ctx, req.IP)
+	if len(hv.IP) != 0 {
+		ipl, err := s.dx.IP2Location().FetchData(ctx, hv.IP)
 		if err == nil {
 			sess.SetIPLocation(ipl)
 		}
 	}
 
-	if len(req.UserAgent) != 0 {
-		uai := httplib.ParseUserAgent(req.UserAgent)
+	if len(hv.UserAgent) != 0 {
+		uai := httplib.ParseUserAgent(hv.UserAgent)
 		sess.SetUAInfo(uai)
 	}
 
@@ -104,17 +105,18 @@ func (s *Service) OAuthIssueSession(ctx context.Context, req *session.OAuthSignR
 		}
 	}
 
+	hv := c.HTTPValues(ctx)
 	sess := session.NewActiveSession(u.ID, s.dx.Settings().Session.Lifespan)
 
-	if len(req.IP) != 0 {
-		ipl, err := s.dx.IP2Location().FetchData(ctx, req.IP)
+	if len(hv.IP) != 0 {
+		ipl, err := s.dx.IP2Location().FetchData(ctx, hv.IP)
 		if err == nil {
 			sess.SetIPLocation(ipl)
 		}
 	}
 
-	if len(req.UserAgent) != 0 {
-		uai := httplib.ParseUserAgent(req.UserAgent)
+	if len(hv.UserAgent) != 0 {
+		uai := httplib.ParseUserAgent(hv.UserAgent)
 		sess.SetUAInfo(uai)
 	}
 
