@@ -13,8 +13,6 @@ type Option struct {
 	Answer     bool   `xorm:"not null" json:"answer,omitempty"`
 
 	CreatedAt time.Time `xorm:"created" json:"created_at,omitempty" field:"created_at"`
-	UpdatedAt time.Time `xorm:"updated" json:"updated_at,omitempty" field:"updated_at"`
-	DeletedAt time.Time `xorm:"deleted" json:"-,omitempty" field:"-"`
 }
 
 func NewOption(qid uint64, text string, answer bool) *Option {

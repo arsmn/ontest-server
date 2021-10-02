@@ -17,6 +17,10 @@ func (s *Service) GetQuestion(ctx context.Context, id uint64) (*question.Questio
 	return s.dx.Persister().FindQuestion(ctx, id)
 }
 
+func (s *Service) GetQuestionOptions(ctx context.Context, id uint64) ([]*question.Option, error) {
+	return s.dx.Persister().FindQuestionOptions(ctx, id)
+}
+
 func (s *Service) GetQuestionList(ctx context.Context, req *question.GetQuestionListRequest) (*question.GetQuestionListResponse, error) {
 	total, res, err := s.dx.Persister().FindListQuestions(ctx, req.ExamID, req.Page, req.PageSize)
 	if err != nil {

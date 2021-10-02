@@ -12,8 +12,7 @@ import (
 type Type int
 
 const (
-	Unknown Type = iota
-	Descriptive
+	Descriptive Type = iota
 	SingleChoice
 	MultipleChoice
 )
