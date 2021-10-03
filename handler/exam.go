@@ -15,7 +15,9 @@ import (
 )
 
 func (h *Handler) examRouter(r chi.Router) {
-	r.Get("/{id}", h.clown(h.getExam, h.withAuth, h.withExam, h.withExamOwner))
+	r.Get("/{id}", h.clown(h.getExam, h.withAuth, h.withExam))
+	r.Get("/{id}/stats", h.clown(h.getExamStats, h.withAuth, h.withExam, h.withExamOwner))
+	r.Post("/{id}/publish", h.clown(h.publishExam, h.withAuth, h.withExam, h.withExamOwner))
 	r.Post("/", h.clown(h.createExam, h.withAuth))
 	r.Put("/{id}", h.clown(h.updateExam, h.withAuth, h.withExam, h.withExamOwner))
 	r.Post("/{id}/cover", h.clown(h.setCover, h.withAuth, h.withExam, h.withExamOwner))
@@ -25,10 +27,21 @@ func (h *Handler) examRouter(r chi.Router) {
 	r.Put("/{id}/question/{qid}", h.clown(h.updateQuestion, h.withAuth, h.withExam, h.withExamOwner, h.withQuestion, h.withQuestionOwner))
 	r.Delete("/{id}/question/{qid}", h.clown(h.deleteQuestion, h.withAuth, h.withExam, h.withExamOwner, h.withQuestion, h.withQuestionOwner))
 	r.Get("/{id}/question/{qid}/options", h.clown(h.getOptions, h.withAuth, h.withExam, h.withExamOwner, h.withQuestion, h.withQuestionOwner))
+	r.Get("/search", h.clown(h.searchExam, h.withAuth))
+	r.Post("/{id}/participate", h.clown(h.participateExam, h.withAuth, h.withExam))
 }
 
 func (h *Handler) getExam(ctx *Context) error {
 	return ctx.OK(payload(ctx.Exam().Map()))
+}
+
+func (h *Handler) getExamStats(ctx *Context) error {
+	res, err := h.dx.App().GetExamStats(ctx.Context(), ctx.Exam().ID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(payload(res))
 }
 
 func (h *Handler) createExam(ctx *Context) error {
@@ -151,6 +164,35 @@ func (h *Handler) deleteQuestion(ctx *Context) error {
 
 func (h *Handler) getOptions(ctx *Context) error {
 	res, err := h.dx.App().GetQuestionOptions(ctx.Context(), ctx.Question().ID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(payload(res))
+}
+
+func (h *Handler) searchExam(ctx *Context) error {
+	req := new(exam.SearchExamRequest)
+	req.PaginatedRequest = shared.NewPaginatedRequest(ctx.Request())
+	res, err := h.dx.App().SearchExam(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(paginatedPayload(res.Exams, res.PaginatedResponse))
+}
+
+func (h *Handler) publishExam(ctx *Context) error {
+	err := h.dx.App().PublishExam(ctx.Context(), ctx.Exam())
+	if err != nil {
+		return err
+	}
+
+	return ctx.OK(success)
+}
+
+func (h *Handler) participateExam(ctx *Context) error {
+	res, err := h.dx.App().Participate(ctx.Context(), ctx.User(), ctx.Exam())
 	if err != nil {
 		return err
 	}

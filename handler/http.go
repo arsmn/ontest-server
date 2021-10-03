@@ -46,6 +46,7 @@ func New(dx handlerDependencies) *Handler {
 	root.Route("/auth", h.authRouter)
 	root.Route("/exam", h.examRouter)
 	root.Route("/oauth", h.oauthHandler)
+	root.Route("/result", h.resultRouter)
 	root.Route("/account", h.accountRouter)
 
 	root.Handle("/files/*", http.StripPrefix("/files/",

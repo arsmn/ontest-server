@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/arsmn/ontest-server/app"
+	"github.com/arsmn/ontest-server/exam"
 	c "github.com/arsmn/ontest-server/module/context"
 	v "github.com/arsmn/ontest-server/module/validation"
 	"github.com/arsmn/ontest-server/question"
@@ -41,6 +42,10 @@ func (s *Service) CreateQuestion(ctx context.Context, req *question.CreateQuesti
 	u := c.User(ctx)
 	e := c.Exam(ctx)
 
+	if e.State == exam.Published {
+		return nil, nil
+	}
+
 	q := question.NewQuestion(u.ID, e.ID, req.Text).
 		SetType(req.Type).
 		SetScore(req.Score).
@@ -66,6 +71,11 @@ func (s *Service) UpdateQuestion(ctx context.Context, req *question.CreateQuesti
 	}
 
 	q := c.Question(ctx)
+	e := c.Exam(ctx)
+
+	if e.State == exam.Published {
+		return nil
+	}
 
 	q.SetText(req.Text).
 		SetType(req.Type).

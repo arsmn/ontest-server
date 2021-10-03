@@ -26,6 +26,8 @@ var tables = []interface{}{
 	new(exam.Exam),
 	new(question.Question),
 	new(question.Option),
+	new(exam.Result),
+	new(exam.Answer),
 }
 
 type (

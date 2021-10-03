@@ -3,6 +3,7 @@ package exam
 import (
 	"time"
 
+	"github.com/arsmn/ontest-server/shared"
 	v "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -39,4 +40,34 @@ func (r UpdateExamRequest) Validate() error {
 		v.Field(&r.StartAt, v.Required, v.Min(time.Now().UTC())),
 		v.Field(&r.Deadline, v.When(!r.Once, v.Required).Else(v.Nil), v.Min(r.StartAt)),
 	)
+}
+
+///// SearchExamRequest
+
+type SearchExamRequest struct {
+	shared.PaginatedRequest
+}
+
+///// SearchExamResponse
+
+type SearchExamResponse struct {
+	shared.PaginatedResponse
+	Exams []*Exam
+}
+
+///// ExamStatsResponse
+
+type ExamStatsResponse struct {
+	TotalDuration       int64 `json:"total_duration"`
+	TotalQuestions      int64 `json:"total_questions"`
+	TotalScores         int64 `json:"total_scores"`
+	TotalNegativeScores int64 `json:"total_negative_scores"`
+}
+
+///// SubmitAnswerRequest
+
+type SubmitAnswerRequest struct {
+	ID              uint64            `json:"-"`
+	Text            string            `json:"text,omitempty"`
+	SelectedOptions []*SelectedOption `json:"selected_options,omitempty"`
 }

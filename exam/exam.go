@@ -16,13 +16,12 @@ import (
 type State int
 
 const (
-	Unknown State = iota
-	Draft
+	Draft State = iota
 	Published
 )
 
 func (s State) String() string {
-	return [...]string{"unknown", "draft", "published"}[s]
+	return [...]string{"draft", "published"}[s]
 }
 
 type Exam struct {
@@ -71,13 +70,17 @@ func (e *Exam) Fs() afero.Fs {
 func (e *Exam) Map(excludes ...string) map[string]interface{} {
 	m := structs.Map(e)
 	m["cover"] = e.Cover()
-	m["state"] = e.State.String()
 
 	for _, e := range excludes {
 		delete(m, e)
 	}
 
 	return m
+}
+
+func (e *Exam) SetState(s State) *Exam {
+	e.State = s
+	return e
 }
 
 func (e *Exam) SetTitle(t string) *Exam {
